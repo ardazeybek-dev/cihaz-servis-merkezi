@@ -23,6 +23,12 @@ public sealed class UygulamaSureci : IAsyncLifetime
         .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(r => r.ForPort(80).ForPath("/api/messages")))
         .Build();
 
+#if DEBUG
+    private const string Yapilandirma = "Debug";
+#else
+    private const string Yapilandirma = "Release";
+#endif
+
     private readonly string _depo = Path.Combine(Path.GetTempPath(), "csm-e2e", Guid.NewGuid().ToString("N"));
     private Process? _surec;
     private IPlaywright? _pw;
@@ -60,7 +66,7 @@ public sealed class UygulamaSureci : IAsyncLifetime
         var port = BosPort();
         Adres = $"http://127.0.0.1:{port}";
 
-        var bilgi = new ProcessStartInfo("dotnet", $"run --no-build --no-launch-profile --project \"{Path.Combine(DepoKoku, "src", "CihazServis.Web")}\"")
+        var bilgi = new ProcessStartInfo("dotnet", $"run --no-build --no-launch-profile -c {Yapilandirma} --project \"{Path.Combine(DepoKoku, "src", "CihazServis.Web")}\"")
         {
             RedirectStandardOutput = true,
             RedirectStandardError = true,

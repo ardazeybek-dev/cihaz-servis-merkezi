@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main, arda]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  derle-ve-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Paketleri geri yükle
+        run: |
+          dotnet restore
+          dotnet tool restore
+
+      - name: Derle (uyarılar hata sayılır)
+        run: dotnet build -c Release --no-restore
+
+      - name: Güvenlik açığı olan paket var mı
+        run: |
+          dotnet list package --vulnerable --include-transitive | tee acik-raporu.txt
+          if grep -q "has the following vulnerable packages" acik-raporu.txt; then
+            echo "::error::Güvenlik açığı olan paket bulundu."
+            exit 1
+          fi
+
+      - name: Migration'lar modelle uyumlu mu
+        run: dotnet ef migrations has-pending-model-changes --project src/CihazServis.Infrastructure --startup-project src/CihazServis.Web --configuration Release --no-build
+
+      - name: Birim ve entegrasyon testleri (SQL Server konteyneriyle)
+        run: dotnet test tests/CihazServis.Tests -c Release --no-build --logger "trx;LogFileName=testler.trx" --results-directory TestResults
+
+      - name: Demo videolarını üret
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg > /dev/null
+          bash scripts/medya-uret.sh
+
+      - name: Uçtan uca testler (Chrome)
+        run: dotnet test tests/CihazServis.E2E -c Release --no-build --logger "trx;LogFileName=e2e.trx" --results-directory TestResults
+
+      - name: Test sonuçlarını sakla
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-sonuclari
+          path: TestResults/
+          retention-days: 14
