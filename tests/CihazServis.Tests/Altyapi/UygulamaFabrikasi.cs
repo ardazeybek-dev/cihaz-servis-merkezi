@@ -42,6 +42,12 @@ public sealed class UygulamaFabrikasi(SqlKonteyner sql, IReadOnlyDictionary<stri
 
     public FakeTimeProvider Saat { get; } = new(Baslangic);
 
+    /// <summary>E-posta yerine kuyruğa verilen işler burada toplanır.</summary>
+    public YakalayiciKuyruk Kuyruk { get; } = new();
+
+    /// <summary>Ekler depoya değil test başına geçici klasöre yazılır.</summary>
+    public string DepoKlasoru { get; } = Path.Combine(Path.GetTempPath(), "csm-test", Guid.NewGuid().ToString("N"));
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Test");
@@ -53,6 +59,7 @@ public sealed class UygulamaFabrikasi(SqlKonteyner sql, IReadOnlyDictionary<stri
             ["Guvenlik:IpOzetAnahtari"] = "test-ip-ozet-anahtari-0123456789",
             ["Guvenlik:MedyaImzaAnahtari"] = "test-medya-imza-anahtari-0123456789",
             ["Hangfire:Etkin"] = "false",
+            ["Depolama:Klasor"] = DepoKlasoru,
             ["HizSiniri:Dogrulama:Limit"] = "1000",
             ["HizSiniri:DurumSorgusu:Limit"] = "1000",
             ["HizSiniri:Form:Limit"] = "1000",
@@ -73,6 +80,8 @@ public sealed class UygulamaFabrikasi(SqlKonteyner sql, IReadOnlyDictionary<stri
             s.RemoveAll<TimeProvider>();
             s.AddSingleton<TimeProvider>(Saat);
             s.AddSingleton<IStartupFilter, TestIpFiltresi>();
+            s.RemoveAll<CihazServis.Application.Servis.IBildirimKuyrugu>();
+            s.AddSingleton<CihazServis.Application.Servis.IBildirimKuyrugu>(Kuyruk);
         });
     }
 
@@ -90,6 +99,18 @@ public sealed class UygulamaFabrikasi(SqlKonteyner sql, IReadOnlyDictionary<stri
         }
 
         return c;
+    }
+
+    public override async ValueTask DisposeAsync()
+    {
+        await base.DisposeAsync();
+        try
+        {
+            Directory.Delete(DepoKlasoru, recursive: true);
+        }
+        catch (DirectoryNotFoundException)
+        {
+        }
     }
 
     public async Task<T> VeriAsync<T>(Func<UygulamaDbContext, Task<T>> islem)

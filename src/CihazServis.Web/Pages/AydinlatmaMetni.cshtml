@@ -1,0 +1,37 @@
+@page "/aydinlatma-metni"
+@using CihazServis.Application.Servis
+@{
+    ViewData["Title"] = "Aydınlatma metni";
+    var tr = new System.Globalization.CultureInfo("tr-TR");
+}
+<div class="dar-blok">
+    <div class="ust-baslik">
+        <div class="etiket">Kişisel veriler</div>
+        <h1>Servis talebi aydınlatma metni</h1>
+        <p class="soluk" data-surum="@AydinlatmaMetni.Surum">Sürüm @AydinlatmaMetni.Surum · @AydinlatmaMetni.Tarih.ToString("d MMMM yyyy", tr)</p>
+    </div>
+
+    <article class="kart">
+        <div class="bildirim bilgi">
+            <p>Bu bir örnek uygulamanın örnek metnidir. Gerçek kullanımda veri sorumlusunun unvanı, adresi ve başvuru kanalları eklenir, metin hukuk danışmanınca gözden geçirilir.</p>
+        </div>
+
+        <h2>Hangi verileri işliyoruz</h2>
+        <p>Servis talebi formunda yazdığınız ad soyad, kurum adı, telefon, e-posta, cihaz seri numarası, sorun açıklaması ve eklediğiniz dosyalar. Kötüye kullanımı önlemek için bağlantı adresinizin geri döndürülemeyen bir özeti saklanır, açık IP adresi saklanmaz.</p>
+
+        <h2>Neden işliyoruz</h2>
+        <p>Talebinizi kaydetmek, ilgili servis personeline atamak, size durum bilgisi göndermek ve garanti kapsamını kontrol etmek için. Hukuki sebep, 6698 sayılı Kanun'un 5. maddesindeki sözleşmenin kurulması ve ifası ile veri sorumlusunun meşru menfaatidir.</p>
+
+        <h2>Kimlerle paylaşıyoruz</h2>
+        <p>Verileriniz yalnız talebinizle ilgilenen servis personeli tarafından görülür. Durum sorgusu sayfasında kişisel bilgileriniz gösterilmez. Yurt dışına aktarım yapılmaz.</p>
+
+        <h2>Ne kadar saklıyoruz</h2>
+        <p>Talep kapandıktan sonra garanti ve yasal yükümlülük süresi boyunca saklanır, süre dolunca silinir ya da anonim hâle getirilir.</p>
+
+        <h2>Haklarınız</h2>
+        <p>Kanun'un 11. maddesi uyarınca verilerinizin işlenip işlenmediğini öğrenme, düzeltilmesini ya da silinmesini isteme ve itiraz etme haklarınız vardır.</p>
+
+        <p class="ara soluk">Formdaki onay kutusunu işaretlediğinizde onayladığınız metnin sürümü ve onay zamanı talebinizle birlikte kaydedilir. Metin değişirse sürüm numarası artar.</p>
+        <a class="dugme ikincil" href="/servis/talep">Servis talebi formuna dön</a>
+    </article>
+</div>

@@ -1,0 +1,94 @@
+@page "/servis/talep"
+@model CihazServis.Web.Pages.Servis.TalepModel
+@using CihazServis.Application.Servis
+@using CihazServis.Application.Varliklar
+@{
+    ViewData["Title"] = "Servis talebi";
+    string? Gecersiz(string alan) => ViewData.ModelState[alan]?.Errors.Count > 0 ? "true" : null;
+}
+<div class="dar-blok">
+    <div class="ust-baslik">
+        <div class="etiket">Servis</div>
+        <h1>Servis talebi açın</h1>
+        <p>Arıza, bakım ya da kurulum için talep bırakın. Talep numaranız ekranda ve e-postanızda olur, durumunu numara ve telefonunuzun son 4 hanesiyle takip edebilirsiniz.</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="kart" novalidate>
+        <partial name="_HataOzeti" />
+
+        <div class="alan">
+            <label asp-for="SeriNo"></label>
+            <input asp-for="SeriNo" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="DMO-A240-0001"
+                   aria-describedby="seri-ipucu" aria-invalid="@Gecersiz("SeriNo")" />
+            <span class="ipucu" id="seri-ipucu">Cihazın arka yüzündeki etikette yazar. Bilmiyorsanız boş bırakın, kaydı servis ekibi eşleştirir.</span>
+            <span asp-validation-for="SeriNo" class="alan-hata"></span>
+        </div>
+
+        <div class="alan">
+            <label asp-for="Konu"></label>
+            <select asp-for="Konu" aria-invalid="@Gecersiz("Konu")">
+                <option value="">Seçin</option>
+                @foreach (var k in Enum.GetValues<TalepKonusu>())
+                {
+                    <option value="@k" selected="@(Model.Konu == k)">@TalepKonusuBilgi.Ad(k)</option>
+                }
+            </select>
+            <span asp-validation-for="Konu" class="alan-hata"></span>
+        </div>
+
+        <div class="alan">
+            <label asp-for="Aciklama"></label>
+            <textarea asp-for="Aciklama" rows="5" aria-describedby="aciklama-ipucu" aria-invalid="@Gecersiz("Aciklama")"></textarea>
+            <span class="ipucu" id="aciklama-ipucu">Ekranda bir hata kodu varsa yazın. Sorun ne zamandır sürüyor, ne yapınca ortaya çıkıyor?</span>
+            <span asp-validation-for="Aciklama" class="alan-hata"></span>
+        </div>
+
+        <div class="alan">
+            <label for="Ekler">Fotoğraf, video ya da belge (isteğe bağlı)</label>
+            <input id="Ekler" name="Ekler" type="file" multiple accept=".jpg,.jpeg,.png,.pdf,.mp4"
+                   aria-describedby="ek-ipucu" aria-invalid="@Gecersiz("Ekler")" />
+            <span class="ipucu" id="ek-ipucu">En fazla @ServisTalebiServisi.AzamiEk dosya, her biri en fazla @(ServisTalebiServisi.AzamiEkBoyutu / 1024 / 1024) MB. JPG, PNG, PDF ya da MP4.</span>
+            <span asp-validation-for="Ekler" class="alan-hata"></span>
+        </div>
+
+        <h2 class="ara-buyuk">İletişim bilgileriniz</h2>
+        <div class="alan">
+            <label asp-for="AdSoyad"></label>
+            <input asp-for="AdSoyad" type="text" autocomplete="name" aria-invalid="@Gecersiz("AdSoyad")" />
+            <span asp-validation-for="AdSoyad" class="alan-hata"></span>
+        </div>
+        <div class="alan">
+            <label asp-for="KurumAdi"></label>
+            <input asp-for="KurumAdi" type="text" autocomplete="organization" aria-invalid="@Gecersiz("KurumAdi")" />
+            <span asp-validation-for="KurumAdi" class="alan-hata"></span>
+        </div>
+        <div class="alan">
+            <label asp-for="Telefon"></label>
+            <input asp-for="Telefon" type="tel" autocomplete="tel" inputmode="tel" placeholder="0555 123 45 67"
+                   aria-describedby="telefon-ipucu" aria-invalid="@Gecersiz("Telefon")" />
+            <span class="ipucu" id="telefon-ipucu">Talep durumunu sorgularken bu numaranın son 4 hanesi sorulur.</span>
+            <span asp-validation-for="Telefon" class="alan-hata"></span>
+        </div>
+        <div class="alan">
+            <label asp-for="Eposta"></label>
+            <input asp-for="Eposta" type="email" autocomplete="email" aria-invalid="@Gecersiz("Eposta")" />
+            <span asp-validation-for="Eposta" class="alan-hata"></span>
+        </div>
+
+        <div class="alan">
+            <input type="hidden" name="AydinlatmaSurumu" value="@AydinlatmaMetni.Surum" />
+            <label class="onay" for="AydinlatmaOnay">
+                <input type="checkbox" id="AydinlatmaOnay" name="AydinlatmaOnay" value="true" checked="@Model.AydinlatmaOnay" aria-invalid="@Gecersiz("AydinlatmaOnay")" />
+                <span><a href="/aydinlatma-metni" target="_blank" rel="noopener">Aydınlatma metnini</a> (sürüm @AydinlatmaMetni.Surum) okudum. Bilgilerimin bu talebin yürütülmesi için işlenmesini anladım.</span>
+            </label>
+            <span asp-validation-for="AydinlatmaOnay" class="alan-hata"></span>
+        </div>
+
+        <div class="tuzak" aria-hidden="true">
+            <label for="Website">Bu alanı boş bırakın</label>
+            <input asp-for="Website" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <button class="dugme" type="submit">Talebi gönder</button>
+    </form>
+</div>

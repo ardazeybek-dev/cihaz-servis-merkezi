@@ -1,0 +1,88 @@
+@page "/servis/durum"
+@model CihazServis.Web.Pages.Servis.DurumModel
+@using CihazServis.Application.Servis
+@using CihazServis.Application.Varliklar
+@{
+    ViewData["Title"] = "Talep durumu";
+    var tr = new System.Globalization.CultureInfo("tr-TR");
+    string? Gecersiz(string alan) => ViewData.ModelState[alan]?.Errors.Count > 0 ? "true" : null;
+    var y = Model.Yanit;
+}
+<div class="dar-blok">
+    <div class="ust-baslik">
+        <div class="etiket">Servis</div>
+        <h1>Talep durumu</h1>
+        <p>Talep numaranızı ve talepte yazdığınız telefonun son 4 hanesini girin. Sonuçta kişisel bilgileriniz gösterilmez.</p>
+    </div>
+
+    <form method="post" class="kart" novalidate autocomplete="off">
+        <partial name="_HataOzeti" />
+        <div class="alan">
+            <label asp-for="TalepNo"></label>
+            <input asp-for="TalepNo" type="text" autocapitalize="characters" spellcheck="false" placeholder="SR-2026-000001" aria-invalid="@Gecersiz("TalepNo")" />
+            <span asp-validation-for="TalepNo" class="alan-hata"></span>
+        </div>
+        <div class="alan">
+            <label asp-for="TelefonSon4"></label>
+            <input asp-for="TelefonSon4" type="text" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="1234" aria-invalid="@Gecersiz("TelefonSon4")" />
+            <span asp-validation-for="TelefonSon4" class="alan-hata"></span>
+        </div>
+        <button class="dugme" type="submit">Sorgula</button>
+    </form>
+
+    <div aria-live="polite">
+        @if (Model.Hata is not null)
+        {
+            <div class="bildirim uyari ara" data-sonuc="hata">
+                <h2>Sonuç bulunamadı</h2>
+                <p>@Model.Hata</p>
+            </div>
+        }
+        @if (y is not null)
+        {
+            var sinif = y.Durum switch
+            {
+                TalepDurumu.Tamamlandi => "basari",
+                TalepDurumu.Iptal => "hata",
+                TalepDurumu.ParcaBekleniyor => "uyari",
+                _ => "vurgu",
+            };
+            <section class="kart ara" data-sonuc="bulundu" data-durum="@y.Durum">
+                <p><span class="rozet @sinif">@y.DurumAdi</span> <span class="rozet">@y.Konu</span></p>
+                <h2 class="mono">@y.No</h2>
+                <dl class="ozellikler">
+                    @if (y.ModelAdi is not null)
+                    {
+                        <dt>Cihaz</dt><dd>@y.ModelAdi</dd>
+                    }
+                    <dt>Açılış</dt><dd>@y.AcilisTarihi.ToString("d MMMM yyyy", tr)</dd>
+                    @if (y.TahminiTarih is { } t)
+                    {
+                        <dt>Tahmini tamamlanma</dt><dd>@t.ToString("d MMMM yyyy dddd", tr)</dd>
+                    }
+                    @if (y.KapanisTarihi is { } k)
+                    {
+                        <dt>Kapanış</dt><dd>@k.ToString("d MMMM yyyy", tr)</dd>
+                    }
+                </dl>
+                <p class="ara"><strong>Sıradaki adım:</strong> @y.SiradakiAdim</p>
+
+                <h3 class="ara-buyuk">Zaman çizelgesi</h3>
+                <ol class="cizelge">
+                    @for (var i = 0; i < y.Cizelge.Count; i++)
+                    {
+                        var a = y.Cizelge[i];
+                        <li class="@(i == y.Cizelge.Count - 1 ? "son" : null)">
+                            <strong>@a.DurumAdi</strong>
+                            <div class="zaman">@TurkiyeSaati.Yerel(a.Zaman).ToString("d MMMM yyyy HH:mm", tr)</div>
+                            @if (a.Not is not null)
+                            {
+                                <p>@a.Not</p>
+                            }
+                        </li>
+                    }
+                </ol>
+            </section>
+        }
+    </div>
+</div>

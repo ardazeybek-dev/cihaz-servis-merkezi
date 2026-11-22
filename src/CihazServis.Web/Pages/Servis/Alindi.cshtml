@@ -1,0 +1,32 @@
+@page "/servis/talep/alindi"
+@model CihazServis.Web.Pages.Servis.AlindiModel
+@{
+    ViewData["Title"] = "Talebiniz alındı";
+}
+<div class="dar-blok">
+    <section class="kart" data-talep-no="@Model.No">
+        <div class="bildirim basari" role="status">
+            <h1>Talebiniz alındı</h1>
+            @if (Model.No is { Length: > 0 })
+            {
+                <p>Talep numaranız aşağıda. Aynı bilgiler e-posta adresinize de gönderildi.</p>
+            }
+            else
+            {
+                <p>Talebiniz servis ekibine iletildi.</p>
+            }
+        </div>
+        @if (Model.No is { Length: > 0 })
+        {
+            <dl class="ozellikler">
+                <dt>Talep numarası</dt><dd class="mono" id="talep-no">@Model.No</dd>
+                @if (Model.HedefTarih is { } h)
+                {
+                    <dt>Tahmini tamamlanma</dt><dd>@h.ToString("d MMMM yyyy dddd", new System.Globalization.CultureInfo("tr-TR"))</dd>
+                }
+            </dl>
+            <p class="ara">Numarayı not alın. Durumu talep numarası ve telefonunuzun son 4 hanesiyle sorgulayabilirsiniz.</p>
+            <a class="dugme" href="/servis/durum">Talep durumunu sorgula</a>
+        }
+    </section>
+</div>

@@ -38,6 +38,9 @@ public static class WebKaydi
         services.ConfigureHttpJsonOptions(o => o.SerializerOptions.Converters.Add(
             new System.Text.Json.Serialization.JsonStringEnumConverter(System.Text.Json.JsonNamingPolicy.CamelCase)));
         services.AddProblemDetails();
+        // Türkçe harfler sayfada &#xE7; gibi kodlanmadan, olduğu gibi yazılır. HTML özel karakterleri yine kodlanır.
+        services.Configure<Microsoft.Extensions.WebEncoders.WebEncoderOptions>(o =>
+            o.TextEncoderSettings = new System.Text.Encodings.Web.TextEncoderSettings(System.Text.Unicode.UnicodeRanges.All));
         services.AddHttpContextAccessor();
 
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

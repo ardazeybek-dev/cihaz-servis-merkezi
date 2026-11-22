@@ -1,0 +1,12 @@
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="bildirim hata" role="alert" tabindex="-1" data-odakla>
+        <h2>Formda düzeltilmesi gereken bir alan var</h2>
+        <ul>
+            @foreach (var hata in ViewData.ModelState.Where(m => m.Value!.Errors.Count > 0))
+            {
+                <li><a href="#@(string.IsNullOrEmpty(hata.Key) ? "icerik" : hata.Key)">@hata.Value!.Errors[0].ErrorMessage</a></li>
+            }
+        </ul>
+    </div>
+}
