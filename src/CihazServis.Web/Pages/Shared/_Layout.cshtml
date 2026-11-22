@@ -26,6 +26,10 @@
                     <li><a href="/servis/talep" aria-current="@Aktif("/servis/talep")">Servis talebi</a></li>
                     <li><a href="/servis/durum" aria-current="@Aktif("/servis/durum")">Talep durumu</a></li>
                     <li><a href="/egitim" aria-current="@Aktif("/egitim")">Eğitim</a></li>
+                    @if (User.IsInRole("Musteri"))
+                    {
+                        <li><a href="/musteri/cihazlar" aria-current="@Aktif("/musteri")">Cihazlarım</a></li>
+                    }
                     @if (personel)
                     {
                         <li><a href="/yonetim" aria-current="@Aktif("/yonetim")">Yönetim</a></li>

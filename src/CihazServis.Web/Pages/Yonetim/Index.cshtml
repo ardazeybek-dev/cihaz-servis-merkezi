@@ -1,0 +1,78 @@
+@page "/yonetim"
+@model CihazServis.Web.Pages.Yonetim.IndexModel
+@using CihazServis.Application.Servis
+@using CihazServis.Application.Varliklar
+@{
+    ViewData["Title"] = "Talep kuyruğu";
+    var tr = new System.Globalization.CultureInfo("tr-TR");
+    var yonetici = User.IsInRole("Yonetici");
+}
+<div class="ust-baslik">
+    <div class="etiket">Yönetim</div>
+    <h1>Talep kuyruğu</h1>
+    <p>Hedef tarihi en yakın talep en üstte. Hedefi geçmiş açık talepler işaretlenir.</p>
+    <p class="yatay">
+        <a class="dugme ikincil kucuk" href="/yonetim/sertifikalar">Sertifikalar</a>
+        @if (yonetici)
+        {
+            <a class="dugme ikincil kucuk" href="/yonetim/denetim">Denetim günlüğü</a>
+            <a class="dugme ikincil kucuk" href="/yonetim/hangfire">Arka plan işleri</a>
+        }
+    </p>
+</div>
+
+<form method="get" class="kart" role="search" aria-label="Talepleri süz">
+    <div class="izgara">
+        <div class="alan g2">
+            <label for="Arama">Ara</label>
+            <input id="Arama" name="Arama" type="search" value="@Model.Arama" placeholder="Talep no, seri no, ad ya da kurum" />
+        </div>
+        <div class="alan g2">
+            <label for="Durum">Durum</label>
+            <select id="Durum" name="Durum">
+                <option value="">Tümü</option>
+                @foreach (var d in Enum.GetValues<TalepDurumu>())
+                {
+                    <option value="@d" selected="@(Model.Durum == d)">@TalepDurumAkisi.Ad(d)</option>
+                }
+            </select>
+        </div>
+        <div class="alan g2">
+            <label class="onay" for="Benim"><input type="checkbox" id="Benim" name="Benim" value="true" checked="@Model.Benim" /> <span>Yalnız bana atananlar</span></label>
+            <label class="onay" for="Kapalilar"><input type="checkbox" id="Kapalilar" name="Kapalilar" value="true" checked="@Model.Kapalilar" /> <span>Kapananları da göster</span></label>
+        </div>
+    </div>
+    <button class="dugme kucuk" type="submit">Süz</button>
+</form>
+
+<section class="kart" aria-labelledby="liste-baslik">
+    <h2 id="liste-baslik">@Model.Talepler.Count talep</h2>
+    @if (Model.Talepler.Count == 0)
+    {
+        <p class="soluk">Bu süzgece uyan talep yok.</p>
+    }
+    else
+    {
+        <div class="tablo-kap">
+            <table>
+                <thead>
+                    <tr><th scope="col">Talep</th><th scope="col">Konu</th><th scope="col">Durum</th><th scope="col">Müşteri</th><th scope="col">Cihaz</th><th scope="col">Sorumlu</th><th scope="col">Hedef</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in Model.Talepler)
+                    {
+                        <tr data-talep="@t.No">
+                            <td><a class="mono" href="/yonetim/talep/@t.No">@t.No</a><br /><span class="ipucu">@TurkiyeSaati.Yerel(t.OlusturmaZamani).ToString("d MMM HH:mm", tr)</span></td>
+                            <td>@TalepKonusuBilgi.Ad(t.Konu)</td>
+                            <td><span class="rozet @(TalepDurumAkisi.KapaliMi(t.Durum) ? "basari" : "vurgu")">@TalepDurumAkisi.Ad(t.Durum)</span></td>
+                            <td>@t.AdSoyad@if (t.KurumAdi is not null) { <br /><span class="ipucu">@t.KurumAdi</span> }</td>
+                            <td><span class="mono">@CihazServis.Application.Ortak.SeriNumarasi.Goster(t.SeriNo)</span>@if (!t.Dogrulandi) { <br /><span class="rozet uyari">Kayıtsız seri</span> }</td>
+                            <td>@t.SorumluAd</td>
+                            <td>@t.HedefTarih.ToString("d MMM", tr)@if (t.Gecikti) { <br /><span class="rozet hata">Gecikti</span> }</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

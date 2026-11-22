@@ -1,0 +1,40 @@
+@page "/musteri/cihazlar/{id:int}"
+@model CihazServis.Web.Pages.Musteri.CihazModel
+@{
+    var d = Model.Detay!;
+    ViewData["Title"] = d.Cihaz.SeriNo;
+    var tr = new System.Globalization.CultureInfo("tr-TR");
+}
+<p><a href="/musteri/cihazlar">← Cihazlarım</a></p>
+<div class="ust-baslik">
+    <div class="etiket">@d.Cihaz.ModelAdi</div>
+    <h1 class="mono">@d.Cihaz.SeriNo</h1>
+</div>
+<div class="izgara">
+    <section class="kart g3">
+        <h2>Cihaz</h2>
+        <dl class="ozellikler">
+            <dt>Kurulum</dt><dd>@d.Cihaz.KurulumTarihi.ToString("d MMMM yyyy", tr)</dd>
+            <dt>Garanti bitişi</dt><dd>@d.Cihaz.GarantiBitis.ToString("d MMMM yyyy", tr)</dd>
+            <dt>Hizmet</dt><dd>@d.Cihaz.HizmetSeviyesi</dd>
+        </dl>
+        <a class="dugme ara" href="/servis/talep?seriNo=@Uri.EscapeDataString(d.Cihaz.SeriNo)">Bu cihaz için servis talebi aç</a>
+    </section>
+    <section class="kart g3">
+        <h2>Servis talepleri</h2>
+        @if (d.Talepler.Count == 0)
+        {
+            <p class="soluk">Bu cihaz için açılmış talep yok.</p>
+        }
+        else
+        {
+            <ul>
+                @foreach (var t in d.Talepler)
+                {
+                    <li><span class="mono">@t.No</span> · @t.Konu · <span class="rozet">@t.DurumAdi</span> <span class="ipucu">@t.OlusturmaZamani.ToOffset(TimeSpan.FromHours(3)).ToString("d MMM yyyy", tr)</span></li>
+                }
+            </ul>
+            <p class="ipucu">Ayrıntılı zaman çizelgesi için <a href="/servis/durum">talep durumu</a> sayfasını kullanın.</p>
+        }
+    </section>
+</div>

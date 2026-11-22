@@ -1,0 +1,32 @@
+@page "/yonetim/denetim"
+@model CihazServis.Web.Pages.Yonetim.DenetimModel
+@using CihazServis.Application.Servis
+@{
+    ViewData["Title"] = "Denetim günlüğü";
+    var tr = new System.Globalization.CultureInfo("tr-TR");
+}
+<p><a href="/yonetim">← Talep kuyruğu</a></p>
+<div class="ust-baslik">
+    <div class="etiket">Yönetim</div>
+    <h1>Denetim günlüğü</h1>
+    <p>Kim, ne zaman, hangi kayda ne yaptı. Kayıtlar yalnız eklenir, veritabanı tetikleyicisi değiştirmeyi ve silmeyi engeller.</p>
+</div>
+<section class="kart">
+    <div class="tablo-kap">
+        <table>
+            <thead><tr><th scope="col">Zaman</th><th scope="col">Kullanıcı</th><th scope="col">İşlem</th><th scope="col">Kayıt</th><th scope="col">Ayrıntı</th></tr></thead>
+            <tbody>
+                @foreach (var d in Model.Kayitlar)
+                {
+                    <tr>
+                        <td>@TurkiyeSaati.Yerel(d.Zaman).ToString("d MMM HH:mm:ss", tr)</td>
+                        <td>@(d.Kullanici ?? "Ziyaretçi")</td>
+                        <td>@d.Islem</td>
+                        <td><span class="mono">@d.VarlikNo</span><br /><span class="ipucu">@d.Varlik</span></td>
+                        <td class="ipucu">@d.Ayrinti</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

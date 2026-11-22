@@ -1,0 +1,62 @@
+@page "/yonetim/sertifikalar"
+@model CihazServis.Web.Pages.Yonetim.SertifikalarModel
+@{
+    ViewData["Title"] = "Sertifikalar";
+    var tr = new System.Globalization.CultureInfo("tr-TR");
+}
+<p><a href="/yonetim">← Talep kuyruğu</a></p>
+<div class="ust-baslik">
+    <div class="etiket">Yönetim</div>
+    <h1>Sertifikalar</h1>
+    <p>İptal silme değildir: sertifikanın geçmişine yeni bir hareket eklenir, karekodla doğrulayan herkes iptal tarihini görür.</p>
+</div>
+
+@if (Model.Bildirim is not null)
+{
+    <div class="bildirim basari" role="status"><p>@Model.Bildirim</p></div>
+}
+<partial name="_HataOzeti" />
+
+<section class="kart">
+    @if (Model.Liste.Count == 0)
+    {
+        <p class="soluk">Henüz verilmiş sertifika yok.</p>
+    }
+    else
+    {
+        <div class="tablo-kap">
+            <table>
+                <thead><tr><th scope="col">Numara</th><th scope="col">Kişi</th><th scope="col">Kurs</th><th scope="col">Veriliş</th><th scope="col">Durum</th></tr></thead>
+                <tbody>
+                    @foreach (var s in Model.Liste)
+                    {
+                        <tr data-sertifika="@s.No">
+                            <td><a class="mono" href="/sertifika/@s.No">@s.No</a></td>
+                            <td>@s.AdSoyad</td>
+                            <td>@s.KursAdi</td>
+                            <td>@s.VerilisZamani.ToOffset(TimeSpan.FromHours(3)).ToString("d MMM yyyy", tr)</td>
+                            <td>
+                                @if (s.Gecerli)
+                                {
+                                    <span class="rozet basari">Geçerli</span>
+                                    <form method="post" asp-page-handler="Iptal" class="ara" novalidate>
+                                        <input type="hidden" name="No" value="@s.No" />
+                                        <label for="gerekce-@s.No" class="ekran-okuyucu">İptal gerekçesi</label>
+                                        <div class="satir">
+                                            <input type="text" id="gerekce-@s.No" name="Gerekce" placeholder="İptal gerekçesi" />
+                                            <button class="dugme ikincil kucuk" type="submit">İptal et</button>
+                                        </div>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="rozet hata">İptal edildi</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

@@ -1,0 +1,36 @@
+@page "/musteri/cihazlar"
+@model CihazServis.Web.Pages.Musteri.CihazlarModel
+@{
+    ViewData["Title"] = "Cihazlarım";
+    var tr = new System.Globalization.CultureInfo("tr-TR");
+}
+<div class="ust-baslik">
+    <div class="etiket">Kurumunuz</div>
+    <h1>Cihazlarım</h1>
+    <p>Kurumunuza kayıtlı cihazlar ve garanti durumları.</p>
+</div>
+<section class="kart">
+    @if (Model.Cihazlar.Count == 0)
+    {
+        <p class="soluk">Kurumunuza kayıtlı cihaz yok.</p>
+    }
+    else
+    {
+        <div class="tablo-kap">
+            <table>
+                <thead><tr><th scope="col">Seri no</th><th scope="col">Model</th><th scope="col">Hizmet</th><th scope="col">Garanti bitişi</th></tr></thead>
+                <tbody>
+                    @foreach (var c in Model.Cihazlar)
+                    {
+                        <tr data-cihaz="@c.Id">
+                            <td><a class="mono" href="/musteri/cihazlar/@c.Id">@c.SeriNo</a></td>
+                            <td>@c.ModelAdi</td>
+                            <td>@c.HizmetSeviyesi</td>
+                            <td>@c.GarantiBitis.ToString("d MMMM yyyy", tr)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

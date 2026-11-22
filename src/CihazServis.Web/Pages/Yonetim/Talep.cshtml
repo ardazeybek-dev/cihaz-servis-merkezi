@@ -1,0 +1,126 @@
+@page "/yonetim/talep/{no}"
+@model CihazServis.Web.Pages.Yonetim.TalepModel
+@using CihazServis.Application.Ortak
+@using CihazServis.Application.Servis
+@using CihazServis.Application.Varliklar
+@{
+    var t = Model.Talep!;
+    ViewData["Title"] = t.No;
+    var tr = new System.Globalization.CultureInfo("tr-TR");
+    var sonrakiler = TalepDurumAkisi.Sonrakiler(t.Durum);
+}
+<p><a href="/yonetim">← Talep kuyruğu</a></p>
+<div class="ust-baslik">
+    <div class="etiket">Servis talebi</div>
+    <h1 class="mono">@t.No</h1>
+    <p class="yatay">
+        <span class="rozet @(TalepDurumAkisi.KapaliMi(t.Durum) ? "basari" : "vurgu")" data-durum="@t.Durum">@TalepDurumAkisi.Ad(t.Durum)</span>
+        <span class="rozet">@TalepKonusuBilgi.Ad(t.Konu)</span>
+        @if (!t.Dogrulandi)
+        {
+            <span class="rozet uyari">Seri numarası kayıtlı değil</span>
+        }
+    </p>
+</div>
+
+@if (Model.Bildirim is not null)
+{
+    <div class="bildirim basari" role="status"><p>@Model.Bildirim</p></div>
+}
+
+<div class="izgara">
+    <section class="kart g3" aria-labelledby="b-talep">
+        <h2 id="b-talep">Talep</h2>
+        <dl class="ozellikler">
+            <dt>Açılış</dt><dd>@TurkiyeSaati.Yerel(t.OlusturmaZamani).ToString("d MMMM yyyy HH:mm", tr)</dd>
+            <dt>Hedef</dt><dd>@t.HedefTarih.ToString("d MMMM yyyy dddd", tr)</dd>
+            <dt>Sorumlu</dt><dd>@t.Sorumlu.AdSoyad</dd>
+            <dt>Seri no</dt><dd class="mono">@(t.SeriNo.Length > 0 ? SeriNumarasi.Goster(t.SeriNo) : "Yazılmadı")</dd>
+            @if (t.Cihaz is not null)
+            {
+                <dt>Cihaz</dt><dd>@t.Cihaz.Model.Ad · @t.Cihaz.HizmetSeviyesi</dd>
+                <dt>Kayıtlı kurum</dt><dd>@(t.Cihaz.Kurum?.Ad ?? "Yok")</dd>
+            }
+        </dl>
+        <h3 class="ara">Açıklama</h3>
+        <p>@t.Aciklama</p>
+        @if (t.Ekler.Count > 0)
+        {
+            <h3 class="ara">Ekler</h3>
+            <ul>
+                @foreach (var e in t.Ekler)
+                {
+                    <li><a href="/yonetim/talep/@t.No?handler=Ek&amp;ekId=@e.Id" data-ek="@e.Id">@e.OrijinalAd</a> <span class="ipucu">@e.IcerikTuru · @(Math.Max(1, e.Boyut / 1024)) KB</span></li>
+                }
+            </ul>
+        }
+    </section>
+
+    <section class="kart g3" aria-labelledby="b-musteri">
+        <h2 id="b-musteri">İletişim</h2>
+        <dl class="ozellikler">
+            <dt>Ad soyad</dt><dd>@t.AdSoyad</dd>
+            <dt>Kurum</dt><dd>@(t.KurumAdi ?? "Yazılmadı")</dd>
+            <dt>Telefon</dt><dd><a href="tel:+90@(t.Telefon)">0@(t.Telefon[..3]) @t.Telefon[3..6] @t.Telefon[6..8] @t.Telefon[8..]</a></dd>
+            <dt>E-posta</dt><dd><a href="mailto:@t.Eposta">@t.Eposta</a></dd>
+            <dt>Aydınlatma</dt><dd>Sürüm @t.AydinlatmaSurumu, @TurkiyeSaati.Yerel(t.AydinlatmaOnayZamani).ToString("d MMM yyyy HH:mm", tr)</dd>
+        </dl>
+    </section>
+</div>
+
+<div class="izgara">
+    <section class="kart g3" aria-labelledby="b-islem">
+        <h2 id="b-islem">Durum ve not</h2>
+        @if (TalepDurumAkisi.KapaliMi(t.Durum))
+        {
+            <p class="soluk">Talep kapalı. Yalnız not eklenebilir.</p>
+        }
+        <form method="post" novalidate>
+            <partial name="_HataOzeti" />
+            <input type="hidden" name="BeklenenDurum" value="@Model.BeklenenDurum" />
+            <div class="alan">
+                <label for="YeniDurum">Yeni durum</label>
+                <select id="YeniDurum" name="YeniDurum">
+                    <option value="@t.Durum" selected>@TalepDurumAkisi.Ad(t.Durum) (değiştirme, yalnız not)</option>
+                    @foreach (var d in sonrakiler)
+                    {
+                        <option value="@d" selected="@(Model.YeniDurum == d && d != t.Durum)">@TalepDurumAkisi.Ad(d)</option>
+                    }
+                </select>
+            </div>
+            <div class="alan">
+                <label asp-for="MusteriNotu"></label>
+                <textarea asp-for="MusteriNotu" rows="3" aria-describedby="mn-ipucu"></textarea>
+                <span class="ipucu" id="mn-ipucu">Durum sorgusunda ve müşteriye giden e-postada görünür.</span>
+            </div>
+            <div class="alan">
+                <label asp-for="IcNot"></label>
+                <textarea asp-for="IcNot" rows="3"></textarea>
+            </div>
+            <button class="dugme" type="submit">Kaydet</button>
+        </form>
+    </section>
+
+    <section class="kart g3" aria-labelledby="b-gecmis">
+        <h2 id="b-gecmis">Geçmiş</h2>
+        <ol class="cizelge">
+            @{ var hareketler = t.Hareketler.OrderBy(h => h.Zaman).ThenBy(h => h.Id).ToList(); }
+            @for (var i = 0; i < hareketler.Count; i++)
+            {
+                var h = hareketler[i];
+                <li class="@(i == hareketler.Count - 1 ? "son" : null)">
+                    <strong>@(h.EskiDurum == h.YeniDurum ? "Not" : TalepDurumAkisi.Ad(h.YeniDurum))</strong>
+                    <div class="zaman">@TurkiyeSaati.Yerel(h.Zaman).ToString("d MMM yyyy HH:mm", tr) · @(h.YapanKullanici?.AdSoyad ?? "Müşteri formu")</div>
+                    @if (h.MusteriNotu is not null)
+                    {
+                        <p><span class="rozet vurgu">Müşteriye</span> @h.MusteriNotu</p>
+                    }
+                    @if (h.IcNot is not null)
+                    {
+                        <p><span class="rozet">İç not</span> @h.IcNot</p>
+                    }
+                </li>
+            }
+        </ol>
+    </section>
+</div>

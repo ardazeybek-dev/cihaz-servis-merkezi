@@ -131,6 +131,17 @@ public sealed class SertifikaServisi(IUygulamaDbContext db, TimeProvider saat)
             .FirstOrDefaultAsync(ct);
     }
 
+    public sealed record SertifikaSatiri(string No, string AdSoyad, string KursAdi, DateTimeOffset VerilisZamani, bool Gecerli);
+
+    /// <summary>Yönetim listesi: en yeni sertifika en üstte.</summary>
+    public async Task<List<SertifikaSatiri>> ListeleAsync(CancellationToken ct = default)
+    {
+        var liste = await db.Sertifikalar.AsNoTracking().Include(s => s.Kurs).Include(s => s.Hareketler)
+            .OrderByDescending(s => s.VerilisZamani).Take(200).ToListAsync(ct);
+        return liste.Select(s => new SertifikaSatiri(s.No, s.AdSoyad, s.Kurs.Ad, s.VerilisZamani,
+            s.Hareketler.OrderBy(h => h.Zaman).ThenBy(h => h.Id).Last().Tur == SertifikaHareketTuru.Verildi)).ToList();
+    }
+
     /// <summary>İptal, silme değil yeni bir harekettir; geçmiş korunur.</summary>
     public async Task<Sonuc<bool>> IptalEtAsync(string no, int yapanKullaniciId, string aciklama, CancellationToken ct = default)
     {
