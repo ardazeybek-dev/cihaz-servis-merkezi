@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
 using Microsoft.Playwright;
 using Testcontainers.MsSql;
 
@@ -13,11 +15,23 @@ namespace CihazServis.E2E;
 public sealed class UygulamaSureci : IAsyncLifetime
 {
     private readonly MsSqlContainer _sql = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest").Build();
+
+    /// <summary>Uygulamanın gönderdiği e-postaları yakalayan sahte SMTP sunucusu; HTTP API'siyle okunur.</summary>
+    private readonly IContainer _smtp = new ContainerBuilder("rnwood/smtp4dev:v3")
+        .WithPortBinding(25, true)
+        .WithPortBinding(80, true)
+        .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(r => r.ForPort(80).ForPath("/api/messages")))
+        .Build();
+
+    private readonly string _depo = Path.Combine(Path.GetTempPath(), "csm-e2e", Guid.NewGuid().ToString("N"));
     private Process? _surec;
     private IPlaywright? _pw;
 
     public string Adres { get; private set; } = "";
     public IBrowser Tarayici { get; private set; } = null!;
+
+    /// <summary>smtp4dev API kökü, ör. http://127.0.0.1:49123.</summary>
+    public string EpostaApi { get; private set; } = "";
 
     public static string DepoKoku
     {
@@ -41,7 +55,8 @@ public sealed class UygulamaSureci : IAsyncLifetime
             throw new InvalidOperationException("Demo videoları yok. Önce scripts/medya-uret.sh çalıştırın.");
         }
 
-        await _sql.StartAsync();
+        await Task.WhenAll(_sql.StartAsync(), _smtp.StartAsync());
+        EpostaApi = $"http://{_smtp.Hostname}:{_smtp.GetMappedPublicPort(80)}";
         var port = BosPort();
         Adres = $"http://127.0.0.1:{port}";
 
@@ -62,6 +77,12 @@ public sealed class UygulamaSureci : IAsyncLifetime
             ["Medya__Klasor"] = medya,
             ["HizSiniri__Form__Limit"] = "1000",
             ["HizSiniri__Dogrulama__Limit"] = "1000",
+            ["HizSiniri__DurumSorgusu__Limit"] = "1000",
+            ["Eposta__Sunucu"] = _smtp.Hostname,
+            ["Eposta__Port"] = _smtp.GetMappedPublicPort(25).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            ["Eposta__Guvenlik"] = "None",
+            ["Depolama__Klasor"] = _depo,
+            ["Uygulama__GenelAdres"] = Adres,
         };
         foreach (var (k, v) in ortam)
         {
@@ -142,6 +163,11 @@ public sealed class UygulamaSureci : IAsyncLifetime
         }
 
         await _sql.DisposeAsync();
+        await _smtp.DisposeAsync();
+        if (Directory.Exists(_depo))
+        {
+            Directory.Delete(_depo, recursive: true);
+        }
     }
 
     private static int BosPort()
