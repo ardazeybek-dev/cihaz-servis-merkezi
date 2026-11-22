@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using CihazServis.Application.Ortak;
+using CihazServis.Application.Servis;
 using CihazServis.Application.Varliklar;
 using Microsoft.EntityFrameworkCore;
 
@@ -153,6 +154,7 @@ public sealed class SertifikaServisi(IUygulamaDbContext db, TimeProvider saat)
             Aciklama = aciklama,
             YapanKullaniciId = yapanKullaniciId,
         });
+        db.Denetle(saat.GetUtcNow(), yapanKullaniciId, "SertifikaIptal", "Sertifika", s.No, aciklama);
         await db.SaveChangesAsync(ct);
         return Sonuc<bool>.Tamam(true);
     }

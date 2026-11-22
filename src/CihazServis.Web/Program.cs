@@ -16,6 +16,7 @@ builder.Host.UseSerilog((ctx, lc) => lc
 builder.Services.AddUygulama();
 builder.Services.AddAltyapi(builder.Configuration);
 builder.Services.AddWebKatmani(builder.Configuration);
+builder.Services.AddArkaPlan(builder.Configuration);
 
 var app = builder.Build();
 
@@ -48,6 +49,7 @@ app.MapRazorPages().WithStaticAssets();
 app.MapOpenApi("/openapi/{documentName}.json");
 app.MapApiUclari();
 app.MapEgitimDosyaUclari();
+app.UseArkaPlan();
 app.MapGet("/saglik", () => Results.Text("ok")).ExcludeFromDescription();
 
 app.Run();

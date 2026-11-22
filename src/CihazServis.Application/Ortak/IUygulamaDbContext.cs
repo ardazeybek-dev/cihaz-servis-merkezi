@@ -22,6 +22,13 @@ public interface IUygulamaDbContext
     DbSet<QuizDenemesi> QuizDenemeleri { get; }
     DbSet<Sertifika> Sertifikalar { get; }
     DbSet<SertifikaHareketi> SertifikaHareketleri { get; }
+    DbSet<ServisTalebi> ServisTalepleri { get; }
+    DbSet<TalepEki> TalepEkleri { get; }
+    DbSet<TalepHareketi> TalepHareketleri { get; }
+    DbSet<AtamaKurali> AtamaKurallari { get; }
+    DbSet<TalepSayaci> TalepSayaclari { get; }
+    DbSet<DurumSorguKilidi> DurumSorguKilitleri { get; }
+    DbSet<DenetimKaydi> DenetimKayitlari { get; }
 
     Task<int> SaveChangesAsync(CancellationToken ct = default);
 }

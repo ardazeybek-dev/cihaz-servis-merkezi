@@ -1,6 +1,9 @@
-﻿using CihazServis.Application.Ortak;
+using CihazServis.Application.Ortak;
 using CihazServis.Application.Varliklar;
 using CihazServis.Application.Egitim;
+using CihazServis.Application.Servis;
+using CihazServis.Infrastructure.Bildirim;
+using CihazServis.Infrastructure.Depolama;
 using CihazServis.Infrastructure.Belgeler;
 using CihazServis.Infrastructure.Guvenlik;
 using CihazServis.Infrastructure.Veri;
@@ -27,6 +30,10 @@ public static class AltyapiKaydi
         services.AddSingleton<IIpOzetleyici, HmacIpOzetleyici>();
         services.AddSingleton<IMedyaImzalayici, HmacMedyaImzalayici>();
         services.AddSingleton<ISertifikaPdfUretici, QuestPdfSertifikaUretici>();
+        services.AddScoped<ITalepNoUretici, SqlTalepNoUretici>();
+        services.AddSingleton<IDosyaDeposu, YerelDosyaDeposu>();
+        services.AddSingleton<IEpostaGonderici, MailKitEpostaGonderici>();
+        services.AddScoped<ServisBildirimIsleri>();
         return services;
     }
 }

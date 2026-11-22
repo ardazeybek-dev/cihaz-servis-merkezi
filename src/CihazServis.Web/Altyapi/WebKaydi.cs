@@ -11,6 +11,7 @@ public static class Politikalar
 {
     public const string Personel = "Personel";
     public const string Musteri = "Musteri";
+    public const string Yonetici = "Yonetici";
 
     public const string HizDogrulama = "Dogrulama";
     public const string HizDurumSorgusu = "DurumSorgusu";
@@ -57,7 +58,8 @@ public static class WebKaydi
             });
         services.AddAuthorizationBuilder()
             .AddPolicy(Politikalar.Personel, p => p.RequireRole("Personel", "Yonetici"))
-            .AddPolicy(Politikalar.Musteri, p => p.RequireRole("Musteri"));
+            .AddPolicy(Politikalar.Musteri, p => p.RequireRole("Musteri"))
+            .AddPolicy(Politikalar.Yonetici, p => p.RequireRole("Yonetici"));
 
         services.AddAntiforgery(o =>
         {

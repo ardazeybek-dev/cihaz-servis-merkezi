@@ -23,6 +23,41 @@ namespace CihazServis.Infrastructure.Veri.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CihazServis.Application.Varliklar.AtamaKurali", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Etkin")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Konu")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int?>("ModelId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Oncelik")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SorumluId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ModelId");
+
+                    b.HasIndex("Oncelik");
+
+                    b.HasIndex("SorumluId");
+
+                    b.ToTable("AtamaKurallari", "servis");
+                });
+
             modelBuilder.Entity("CihazServis.Application.Varliklar.Cihaz", b =>
                 {
                     b.Property<int>("Id")
@@ -100,6 +135,52 @@ namespace CihazServis.Infrastructure.Veri.Migrations
                         .IsUnique();
 
                     b.ToTable("CihazModelleri", "servis");
+                });
+
+            modelBuilder.Entity("CihazServis.Application.Varliklar.DenetimKaydi", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Ayrinti")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Islem")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("KullaniciId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Varlik")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("VarlikNo")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<DateTimeOffset>("Zaman")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KullaniciId");
+
+                    b.HasIndex("Zaman");
+
+                    b.ToTable("DenetimKayitlari", "servis", t =>
+                        {
+                            t.HasTrigger("TR_DenetimKayitlari_YalnizEkleme");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("CihazServis.Application.Varliklar.Ders", b =>
@@ -234,6 +315,28 @@ namespace CihazServis.Infrastructure.Veri.Migrations
                     b.HasIndex("Zaman");
 
                     b.ToTable("DogrulamaSorgulari", "servis");
+                });
+
+            modelBuilder.Entity("CihazServis.Application.Varliklar.DurumSorguKilidi", b =>
+                {
+                    b.Property<string>("TalepNo")
+                        .HasMaxLength(14)
+                        .IsUnicode(false)
+                        .HasColumnType("char(14)")
+                        .IsFixedLength();
+
+                    b.Property<int>("HataliDeneme")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("KilitBitis")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("SonHata")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("TalepNo");
+
+                    b.ToTable("DurumSorguKilitleri", "servis");
                 });
 
             modelBuilder.Entity("CihazServis.Application.Varliklar.Kullanici", b =>
@@ -495,6 +598,237 @@ namespace CihazServis.Infrastructure.Veri.Migrations
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
+            modelBuilder.Entity("CihazServis.Application.Varliklar.ServisTalebi", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Aciklama")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("AdSoyad")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTimeOffset>("AydinlatmaOnayZamani")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("AydinlatmaSurumu")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<int?>("CihazId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Dogrulandi")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Durum")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Eposta")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("nvarchar(254)");
+
+                    b.Property<DateOnly>("HedefTarih")
+                        .HasColumnType("date");
+
+                    b.Property<string>("IpOzeti")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<string>("Konu")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("KurumAdi")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("No")
+                        .IsRequired()
+                        .HasMaxLength(14)
+                        .IsUnicode(false)
+                        .HasColumnType("char(14)")
+                        .IsFixedLength();
+
+                    b.Property<DateTimeOffset>("OlusturmaZamani")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("SeriNo")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<int>("SorumluId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("SurumDamgasi")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("Telefon")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .IsUnicode(false)
+                        .HasColumnType("char(10)")
+                        .IsFixedLength();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CihazId");
+
+                    b.HasIndex("No")
+                        .IsUnique();
+
+                    b.HasIndex("SeriNo");
+
+                    b.HasIndex("SorumluId");
+
+                    b.HasIndex("Durum", "HedefTarih");
+
+                    b.ToTable("ServisTalepleri", "servis", t =>
+                        {
+                            t.HasCheckConstraint("CK_ServisTalepleri_No", "[No] LIKE 'SR-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9][0-9][0-9]'");
+
+                            t.HasCheckConstraint("CK_ServisTalepleri_Telefon", "LEN([Telefon]) = 10 AND [Telefon] NOT LIKE '%[^0-9]%'");
+                        });
+                });
+
+            modelBuilder.Entity("CihazServis.Application.Varliklar.TalepEki", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<long>("Boyut")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("DepoAdi")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<string>("IcerikTuru")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("OrijinalAd")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("TalepId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepoAdi")
+                        .IsUnique();
+
+                    b.HasIndex("TalepId");
+
+                    b.ToTable("TalepEkleri", "servis");
+                });
+
+            modelBuilder.Entity("CihazServis.Application.Varliklar.TalepHareketi", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("EskiDurum")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("IcNot")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("MusteriNotu")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("TalepId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("YapanKullaniciId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("YeniDurum")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTimeOffset>("Zaman")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("YapanKullaniciId");
+
+                    b.HasIndex("TalepId", "Zaman");
+
+                    b.ToTable("TalepHareketleri", "servis", t =>
+                        {
+                            t.HasTrigger("TR_TalepHareketleri_YalnizEkleme");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
+            modelBuilder.Entity("CihazServis.Application.Varliklar.TalepSayaci", b =>
+                {
+                    b.Property<int>("Yil")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Son")
+                        .HasColumnType("int");
+
+                    b.HasKey("Yil");
+
+                    b.ToTable("TalepSayaclari", "servis");
+                });
+
+            modelBuilder.Entity("CihazServis.Application.Varliklar.AtamaKurali", b =>
+                {
+                    b.HasOne("CihazServis.Application.Varliklar.CihazModeli", "Model")
+                        .WithMany()
+                        .HasForeignKey("ModelId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CihazServis.Application.Varliklar.Kullanici", "Sorumlu")
+                        .WithMany()
+                        .HasForeignKey("SorumluId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Model");
+
+                    b.Navigation("Sorumlu");
+                });
+
             modelBuilder.Entity("CihazServis.Application.Varliklar.Cihaz", b =>
                 {
                     b.HasOne("CihazServis.Application.Varliklar.Kurum", "Kurum")
@@ -511,6 +845,14 @@ namespace CihazServis.Infrastructure.Veri.Migrations
                     b.Navigation("Kurum");
 
                     b.Navigation("Model");
+                });
+
+            modelBuilder.Entity("CihazServis.Application.Varliklar.DenetimKaydi", b =>
+                {
+                    b.HasOne("CihazServis.Application.Varliklar.Kullanici", null)
+                        .WithMany()
+                        .HasForeignKey("KullaniciId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("CihazServis.Application.Varliklar.Ders", b =>
@@ -620,6 +962,49 @@ namespace CihazServis.Infrastructure.Veri.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CihazServis.Application.Varliklar.ServisTalebi", b =>
+                {
+                    b.HasOne("CihazServis.Application.Varliklar.Cihaz", "Cihaz")
+                        .WithMany()
+                        .HasForeignKey("CihazId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CihazServis.Application.Varliklar.Kullanici", "Sorumlu")
+                        .WithMany()
+                        .HasForeignKey("SorumluId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Cihaz");
+
+                    b.Navigation("Sorumlu");
+                });
+
+            modelBuilder.Entity("CihazServis.Application.Varliklar.TalepEki", b =>
+                {
+                    b.HasOne("CihazServis.Application.Varliklar.ServisTalebi", null)
+                        .WithMany("Ekler")
+                        .HasForeignKey("TalepId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CihazServis.Application.Varliklar.TalepHareketi", b =>
+                {
+                    b.HasOne("CihazServis.Application.Varliklar.ServisTalebi", null)
+                        .WithMany("Hareketler")
+                        .HasForeignKey("TalepId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CihazServis.Application.Varliklar.Kullanici", "YapanKullanici")
+                        .WithMany()
+                        .HasForeignKey("YapanKullaniciId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("YapanKullanici");
+                });
+
             modelBuilder.Entity("CihazServis.Application.Varliklar.Ders", b =>
                 {
                     b.Navigation("Sorular");
@@ -637,6 +1022,13 @@ namespace CihazServis.Infrastructure.Veri.Migrations
 
             modelBuilder.Entity("CihazServis.Application.Varliklar.Sertifika", b =>
                 {
+                    b.Navigation("Hareketler");
+                });
+
+            modelBuilder.Entity("CihazServis.Application.Varliklar.ServisTalebi", b =>
+                {
+                    b.Navigation("Ekler");
+
                     b.Navigation("Hareketler");
                 });
 #pragma warning restore 612, 618

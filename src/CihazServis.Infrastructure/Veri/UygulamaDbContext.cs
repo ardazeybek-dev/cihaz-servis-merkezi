@@ -22,6 +22,13 @@ public class UygulamaDbContext(DbContextOptions<UygulamaDbContext> options) : Db
     public DbSet<QuizDenemesi> QuizDenemeleri => Set<QuizDenemesi>();
     public DbSet<Sertifika> Sertifikalar => Set<Sertifika>();
     public DbSet<SertifikaHareketi> SertifikaHareketleri => Set<SertifikaHareketi>();
+    public DbSet<ServisTalebi> ServisTalepleri => Set<ServisTalebi>();
+    public DbSet<TalepEki> TalepEkleri => Set<TalepEki>();
+    public DbSet<TalepHareketi> TalepHareketleri => Set<TalepHareketi>();
+    public DbSet<AtamaKurali> AtamaKurallari => Set<AtamaKurali>();
+    public DbSet<TalepSayaci> TalepSayaclari => Set<TalepSayaci>();
+    public DbSet<DurumSorguKilidi> DurumSorguKilitleri => Set<DurumSorguKilidi>();
+    public DbSet<DenetimKaydi> DenetimKayitlari => Set<DenetimKaydi>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {

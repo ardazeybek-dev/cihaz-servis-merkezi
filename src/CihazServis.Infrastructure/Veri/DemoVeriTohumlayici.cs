@@ -26,7 +26,64 @@ public sealed class DemoVeriTohumlayici(UygulamaDbContext db, IPasswordHasher<Ku
         {
             await KursAsync(ct);
         }
+
+        if (!await db.AtamaKurallari.AnyAsync(ct))
+        {
+            await ServisAsync(ct);
+        }
     }
+
+    /// <summary>Demo telefonları uydurmadır; durum sorgusunda son 4 hane 1234 ve 5678.</summary>
+    public const string DemoTalepAcik = "SR-2026-000001";
+    public const string DemoTalepKapali = "SR-2026-000002";
+
+    private async Task ServisAsync(CancellationToken ct)
+    {
+        var personel = await db.Kullanicilar.FirstAsync(k => k.Eposta == "personel@servis.test", ct);
+        var yonetici = await db.Kullanicilar.FirstAsync(k => k.Eposta == "yonetici@servis.test", ct);
+        var a100 = await db.CihazModelleri.FirstAsync(m => m.Kod == "A100", ct);
+        db.AtamaKurallari.AddRange(
+            new AtamaKurali { Oncelik = 10, Konu = TalepKonusu.Kurulum, Sorumlu = personel },
+            new AtamaKurali { Oncelik = 20, Konu = TalepKonusu.Ariza, Model = a100, Sorumlu = personel });
+
+        var c1 = await db.Cihazlar.FirstAsync(c => c.SeriNo == "DMOA2400001", ct);
+        var c3 = await db.Cihazlar.FirstAsync(c => c.SeriNo == "DMOB2500003", ct);
+        DateTimeOffset Z(int gun, int saat) => new(2026, 11, gun, saat, 0, 0, TimeSpan.Zero);
+
+        var acik = Talep(DemoTalepAcik, c1, TalepKonusu.Ariza, "Ölçüm sırasında ekranda E-21 hata kodu çıkıyor, ölçüm yarıda kalıyor.",
+            "Ayşe Yılmaz", "Örnek Klinik Kadıköy", "5550001234", "musteri@ornek-klinik.test", Z(16, 7), new DateOnly(2026, 11, 18), personel);
+        acik.Hareketler.Add(H(TalepDurumu.Alindi, TalepDurumu.Inceleniyor, Z(16, 9), "Talebiniz incelemeye alındı.", "E-21 elektrot temas hatası olabilir.", personel));
+        acik.Hareketler.Add(H(TalepDurumu.Inceleniyor, TalepDurumu.ParcaBekleniyor, Z(17, 8), "Değişecek elektrot plakası sipariş edildi.", "Tedarikçi teslim 2 gün dedi.", personel));
+        acik.Hareketler.Add(H(TalepDurumu.ParcaBekleniyor, TalepDurumu.Serviste, Z(19, 11), "Parça geldi, servis ziyareti planlandı.", null, personel));
+        acik.Durum = TalepDurumu.Serviste;
+
+        var kapali = Talep(DemoTalepKapali, c3, TalepKonusu.Bakim, "Yıllık periyodik bakım talebi.",
+            "Mehmet Demir", "Örnek Spor Salonu Bornova", "5550005678", "musteri@ornek-spor.test", Z(10, 6), new DateOnly(2026, 11, 16), yonetici);
+        kapali.Hareketler.Add(H(TalepDurumu.Alindi, TalepDurumu.Inceleniyor, Z(10, 10), null, null, yonetici));
+        kapali.Hareketler.Add(H(TalepDurumu.Inceleniyor, TalepDurumu.Serviste, Z(12, 7), "Bakım ziyareti yapılıyor.", null, yonetici));
+        kapali.Hareketler.Add(H(TalepDurumu.Serviste, TalepDurumu.Tamamlandi, Z(12, 13), "Bakım tamamlandı, kalibrasyon kontrol edildi.", "Bir sonraki bakım Kasım 2027.", yonetici));
+        kapali.Durum = TalepDurumu.Tamamlandi;
+
+        db.ServisTalepleri.AddRange(acik, kapali);
+        db.TalepSayaclari.Add(new TalepSayaci { Yil = 2026, Son = 2 });
+        await db.SaveChangesAsync(ct);
+    }
+
+    private static ServisTalebi Talep(string no, Cihaz cihaz, TalepKonusu konu, string aciklama, string ad, string kurum, string tel, string eposta,
+        DateTimeOffset zaman, DateOnly hedef, Kullanici sorumlu)
+    {
+        var t = new ServisTalebi
+        {
+            No = no, SeriNo = cihaz.SeriNo, Cihaz = cihaz, Dogrulandi = true, Konu = konu, Aciklama = aciklama, AdSoyad = ad, KurumAdi = kurum,
+            Telefon = tel, Eposta = eposta, AydinlatmaSurumu = Application.Servis.AydinlatmaMetni.Surum, AydinlatmaOnayZamani = zaman,
+            OlusturmaZamani = zaman, HedefTarih = hedef, Sorumlu = sorumlu, IpOzeti = "demo",
+        };
+        t.Hareketler.Add(new TalepHareketi { YeniDurum = TalepDurumu.Alindi, Zaman = zaman });
+        return t;
+    }
+
+    private static TalepHareketi H(TalepDurumu eski, TalepDurumu yeni, DateTimeOffset zaman, string? musteri, string? ic, Kullanici yapan)
+        => new() { EskiDurum = eski, YeniDurum = yeni, Zaman = zaman, MusteriNotu = musteri, IcNot = ic, YapanKullanici = yapan };
 
     private async Task KursAsync(CancellationToken ct)
     {
