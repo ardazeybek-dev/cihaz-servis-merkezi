@@ -49,7 +49,7 @@ bash scripts/medya-uret.sh           # media/ klasörüne 3 demo ders videosu
 ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/CihazServis.Web
 ```
 
-Geliştirme ortamında migration ve demo verisi açılışta otomatik uygulanır. Uygulama http://localhost:5292 adresinde açılır, gönderilen e-postalar smtp4dev arayüzünde görünür.
+Geliştirme ortamında migration ve demo verisi açılışta otomatik uygulanır. Uygulama http://localhost:5080 adresinde açılır, gönderilen e-postalar smtp4dev arayüzünde görünür.
 
 **Demo hesapları** (şifre hepsinde `Demo.2026!`)
 
@@ -65,8 +65,8 @@ Demo seri numaraları: `DMO-A240-0001` (garantisi devam ediyor), `DMO-A230-0002`
 ## Testler
 
 ```bash
-dotnet test tests/CihazServis.Tests   # 144 birim + entegrasyon testi, Docker gerekir
-dotnet test tests/CihazServis.E2E     # 36 tarayıcı testi, önce scripts/medya-uret.sh
+dotnet test tests/CihazServis.Tests   # birim + entegrasyon testleri, Docker gerekir
+dotnet test tests/CihazServis.E2E     # tarayıcı testleri, önce scripts/medya-uret.sh
 ```
 
 Örnek olarak sınanan durumlar: aynı anda açılan talepler aynı numarayı almaz, geçersiz durum geçişi reddedilir, 5 hatalı denemede kilit, uzantısı değiştirilmiş dosya reddedilir, durum yanıtında kişisel veri yok, başka kurumun cihazı 404, sahte izleme bildirimi ve ileri sarma sunucuda reddedilir, süresi geçmiş medya imzası 403, quiz cevabı istemciye gitmez, iptal edilmiş sertifika doğrulamada geçersiz görünür. E2E testi bir talebi baştan sona yürütür: form → SMTP'ye düşen e-posta → yönetimde durum değişikliği → müşterinin sorgusunda görünmesi.
@@ -131,4 +131,4 @@ Sample customer-facing app for a measurement-device vendor, built on **ASP.NET C
 - **Back office**: ticket queue, validated status transitions, internal vs. customer-visible notes, append-only audit log enforced by a database trigger, object-level authorisation (other tenants' devices return 404).
 - **Training**: signed short-lived HLS URLs, a player that cannot be skipped ahead, server-verified watch intervals, server-side quiz scoring, QR-verifiable PDF certificates.
 
-Run locally with `docker compose up -d --wait`, `bash scripts/medya-uret.sh`, `dotnet run --project src/CihazServis.Web`. Tests: 144 unit/integration tests against a real SQL Server container (Testcontainers) and 36 Playwright end-to-end tests including WCAG 2.1 AA (axe-core) and 320 px overflow checks, all run in GitHub Actions.
+Run locally with `docker compose up -d --wait`, `bash scripts/medya-uret.sh`, `dotnet run --project src/CihazServis.Web`. Tests: unit/integration tests against a real SQL Server container (Testcontainers) and Playwright end-to-end tests including WCAG 2.1 AA (axe-core) and 320 px overflow checks, all run in GitHub Actions.
