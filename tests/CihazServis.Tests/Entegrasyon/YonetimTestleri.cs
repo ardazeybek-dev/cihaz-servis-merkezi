@@ -211,5 +211,11 @@ public sealed class YonetimTestleri(SqlKonteyner sql) : IAsyncLifetime
         Assert.Equal(HttpStatusCode.Redirect, yanit.StatusCode);
         Assert.True(await _f.VeriAsync(db => db.DenetimKayitlari.AnyAsync(d => d.Islem == "SertifikaIptal" && d.VarlikNo == no)));
         Assert.Contains("İptal edildi", await c.GetStringAsync("/yonetim/sertifikalar"));
+
+        // Karekodu okutan herkes, girişsiz doğrulama sayfasında sertifikanın artık geçersiz olduğunu görür.
+        using var ziyaretci = _f.CreateClient();
+        var dogrulama = await ziyaretci.GetStringAsync($"/sertifika/{no}");
+        Assert.Contains("data-sertifika=\"iptal\"", dogrulama);
+        Assert.Contains("İptal tarihi", dogrulama);
     }
 }
