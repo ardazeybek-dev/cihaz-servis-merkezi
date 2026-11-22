@@ -27,7 +27,6 @@ public static class WebKaydi
             o.Conventions.AuthorizeFolder("/Yonetim", Politikalar.Personel);
             o.Conventions.AuthorizeFolder("/Musteri", Politikalar.Musteri);
             o.Conventions.AuthorizeFolder("/Egitim");
-            o.Conventions.AllowAnonymousToPage("/Egitim/SertifikaDogrula");
         });
         services.AddOpenApi(o => o.AddDocumentTransformer((doc, _, _) =>
         {
@@ -85,7 +84,9 @@ public static class WebKaydi
             {
                 var politika = ad;
                 // Yalnız veri gönderen istekler sayılır, sayfanın kendisini açmak sınıra takılmaz.
-                o.AddPolicy(politika, ctx => HttpMethods.IsGet(ctx.Request.Method) || HttpMethods.IsHead(ctx.Request.Method)
+                // Sertifika doğrulamada sorgunun kendisi GET olduğu için o politikada okuma da sayılır.
+                var okumaSayilir = politika == Politikalar.HizSertifikaDogrulama;
+                o.AddPolicy(politika, ctx => !okumaSayilir && (HttpMethods.IsGet(ctx.Request.Method) || HttpMethods.IsHead(ctx.Request.Method))
                     ? RateLimitPartition.GetNoLimiter("okuma")
                     : RateLimitPartition.GetFixedWindowLimiter(
                         ctx.Connection.RemoteIpAddress?.ToString() ?? "bilinmiyor",

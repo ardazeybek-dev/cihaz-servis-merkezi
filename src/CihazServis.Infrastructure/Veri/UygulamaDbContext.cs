@@ -14,6 +14,14 @@ public class UygulamaDbContext(DbContextOptions<UygulamaDbContext> options) : Db
     public DbSet<CihazModeli> CihazModelleri => Set<CihazModeli>();
     public DbSet<Cihaz> Cihazlar => Set<Cihaz>();
     public DbSet<DogrulamaSorgusu> DogrulamaSorgulari => Set<DogrulamaSorgusu>();
+    public DbSet<Kurs> Kurslar => Set<Kurs>();
+    public DbSet<Ders> Dersler => Set<Ders>();
+    public DbSet<QuizSorusu> QuizSorulari => Set<QuizSorusu>();
+    public DbSet<QuizSecenegi> QuizSecenekleri => Set<QuizSecenegi>();
+    public DbSet<DersIlerlemesi> DersIlerlemeleri => Set<DersIlerlemesi>();
+    public DbSet<QuizDenemesi> QuizDenemeleri => Set<QuizDenemesi>();
+    public DbSet<Sertifika> Sertifikalar => Set<Sertifika>();
+    public DbSet<SertifikaHareketi> SertifikaHareketleri => Set<SertifikaHareketi>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {

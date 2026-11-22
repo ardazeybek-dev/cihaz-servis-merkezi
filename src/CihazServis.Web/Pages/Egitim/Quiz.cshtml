@@ -1,0 +1,80 @@
+@page "/egitim/quiz/{dersId:int}"
+@model CihazServis.Web.Pages.Egitim.QuizModel
+@{
+    ViewData["Title"] = Model.Quiz?.DersBasligi is { } b ? $"Sorular · {b}" : "Sorular";
+}
+<p><a href="/egitim">← Eğitimlere dön</a></p>
+<div class="dar-blok">
+    @if (Model.Sonuc is { } s)
+    {
+        <div class="ust-baslik">
+            <div class="etiket">Sonuç</div>
+            <h1>@(s.Gecti ? "Tebrikler, geçtiniz" : "Bu sefer olmadı")</h1>
+        </div>
+        <section class="kart" data-quiz-sonuc="@(s.Gecti ? "gecti" : "kaldi")">
+            <p class="buyuk-rakam">@s.Puan</p>
+            <p class="soluk">@s.SoruSayisi sorudan @s.DogruSayisi doğru. Geçme notu @CihazServis.Application.Egitim.QuizServisi.GecmeNotu.</p>
+            @if (s.Gecti)
+            {
+                if (s.SertifikaNo is not null)
+                {
+                    <div class="bildirim basari">
+                        <h2>Eğitimi tamamladınız</h2>
+                        <p>Kullanım sertifikanız hazır.</p>
+                        <p class="yatay">
+                            <a class="dugme kucuk" href="/egitim/sertifikalar/@s.SertifikaNo/pdf">PDF olarak indir</a>
+                            <a class="dugme ikincil kucuk" href="/sertifika/@s.SertifikaNo">Doğrulama sayfası</a>
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <a class="dugme" href="/egitim">Sonraki derse geç</a>
+                }
+            }
+            else if (s.VideoSifirlandi)
+            {
+                <div class="bildirim uyari">
+                    <p>Üç deneme hakkınız doldu. Dersin videosunu baştan izledikten sonra sorular yeniden açılır.</p>
+                </div>
+                <a class="dugme" href="/egitim/ders/@Model.DersId">Videoyu yeniden izle</a>
+            }
+            else
+            {
+                <p>Kalan deneme hakkınız @s.KalanHak. Yeni denemede sorular değişir.</p>
+                <a class="dugme" href="/egitim/quiz/@Model.DersId">Yeniden dene</a>
+            }
+        </section>
+    }
+    else if (Model.Uyari is not null)
+    {
+        <div class="bildirim uyari" role="alert"><p>@Model.Uyari</p></div>
+        <a class="dugme" href="/egitim">Eğitimlere dön</a>
+    }
+    else if (Model.Quiz is { } q)
+    {
+        <div class="ust-baslik">
+            <div class="etiket">Ders soruları</div>
+            <h1>@q.DersBasligi</h1>
+            <p>@q.Sorular.Count soru, geçme notu @q.GecmeNotu. Kalan deneme hakkınız @q.KalanHak.</p>
+        </div>
+        <form method="post">
+            <input type="hidden" name="denemeId" value="@q.DenemeId" />
+            @for (var i = 0; i < q.Sorular.Count; i++)
+            {
+                var soru = q.Sorular[i];
+                <fieldset class="soru">
+                    <legend>@(i + 1). @soru.Metin</legend>
+                    @foreach (var secenek in soru.Secenekler)
+                    {
+                        <label>
+                            <input type="radio" name="soru-@soru.Id" value="@secenek.Id" required />
+                            <span>@secenek.Metin</span>
+                        </label>
+                    }
+                </fieldset>
+            }
+            <button class="dugme" type="submit">Cevapları gönder</button>
+        </form>
+    }
+</div>

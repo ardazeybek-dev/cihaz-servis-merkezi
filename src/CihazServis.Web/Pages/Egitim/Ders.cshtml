@@ -1,0 +1,57 @@
+@page "/egitim/ders/{id:int}"
+@model CihazServis.Web.Pages.Egitim.DersModel
+@using CihazServis.Application.Egitim
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{
+    ViewData["Title"] = Model.Ders.Baslik;
+    var d = Model.Ders;
+    var anahtar = Antiforgery.GetAndStoreTokens(HttpContext).RequestToken;
+}
+<p><a href="/egitim">← Eğitimlere dön</a></p>
+<div class="izgara">
+    <div class="g4">
+        <div class="ust-baslik">
+            <div class="etiket">Ders @d.Sira</div>
+            <h1>@d.Baslik</h1>
+            <p>@d.Aciklama</p>
+        </div>
+
+        <div data-oynatici data-ders="@d.DersId" data-csrf="@anahtar" data-tamamlandi="@(d.Asama is DersAsamasi.QuizAcik or DersAsamasi.Tamamlandi ? "1" : "0")">
+            <div class="oynatici-kap">
+                <video controls playsinline preload="metadata" disablepictureinpicture controlslist="nodownload noplaybackrate noremoteplayback"
+                       aria-label="Ders videosu: @d.Baslik"></video>
+            </div>
+            <div class="ara">
+                <div class="ilerleme" role="progressbar" aria-label="İzlenen kısım" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <span data-ilerleme-cubuk></span>
+                </div>
+                <p class="oynatici-bilgi">
+                    <span data-ilerleme-metin>İzlenen kısım %0</span>
+                    <span>Tamamlanma şartı %95</span>
+                </p>
+            </div>
+            <div data-mesaj aria-live="polite"></div>
+            <p class="ara" data-quiz-baglanti hidden="@(d.Asama == DersAsamasi.QuizAcik ? null : "hidden")">
+                <a class="dugme" href="/egitim/quiz/@d.DersId">Soruları çöz</a>
+            </p>
+        </div>
+    </div>
+    <aside class="g2">
+        <div class="kart">
+            <h2>Nasıl çalışır</h2>
+            <ul class="soluk">
+                <li>Video geri sarılabilir, ileri sarılamaz.</li>
+                <li>Oynatma hızı 1x'te sabittir.</li>
+                <li>Sekmeden ayrılınca video durur.</li>
+                <li>İzlediğiniz süre sunucuda ölçülür, videonun %95'i izlenince sorular açılır.</li>
+                <li>Aynı anda tek bir sekmede izlenebilir.</li>
+                <li>Video tamamlandıktan sonra serbestçe ileri geri gidebilirsiniz.</li>
+            </ul>
+        </div>
+    </aside>
+</div>
+
+@section Scripts {
+    <script src="~/lib/hls.js/hls.min.js" defer></script>
+    <script src="~/js/egitim-oynatici.js" asp-append-version="true" defer></script>
+}

@@ -1,5 +1,7 @@
 ﻿using CihazServis.Application.Ortak;
 using CihazServis.Application.Varliklar;
+using CihazServis.Application.Egitim;
+using CihazServis.Infrastructure.Belgeler;
 using CihazServis.Infrastructure.Guvenlik;
 using CihazServis.Infrastructure.Veri;
 using Microsoft.AspNetCore.Identity;
@@ -23,6 +25,8 @@ public static class AltyapiKaydi
         services.AddScoped<IPasswordHasher<Kullanici>, PasswordHasher<Kullanici>>();
         services.AddScoped<DemoVeriTohumlayici>();
         services.AddSingleton<IIpOzetleyici, HmacIpOzetleyici>();
+        services.AddSingleton<IMedyaImzalayici, HmacMedyaImzalayici>();
+        services.AddSingleton<ISertifikaPdfUretici, QuestPdfSertifikaUretici>();
         return services;
     }
 }

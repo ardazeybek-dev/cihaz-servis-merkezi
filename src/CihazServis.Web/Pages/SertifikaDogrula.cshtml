@@ -1,0 +1,58 @@
+@page "/sertifika/{no?}"
+@model SertifikaDogrulaModel
+@{
+    ViewData["Title"] = "Sertifika doğrulama";
+    var tr = new System.Globalization.CultureInfo("tr-TR");
+}
+<div class="dar-blok">
+    <div class="ust-baslik">
+        <div class="etiket">Doğrulama</div>
+        <h1>Sertifika doğrulama</h1>
+        <p>Sertifikadaki karekodu okutun ya da sertifika numarasını yazın.</p>
+    </div>
+
+    @if (Model.Sonuc is { } s)
+    {
+        <section class="kart" data-sertifika="@(s.Gecerli ? "gecerli" : "iptal")">
+            <p>@if (s.Gecerli)
+               {
+                   <span class="rozet basari">Geçerli</span>
+               }
+               else
+               {
+                   <span class="rozet hata">İptal edildi</span>
+               }</p>
+            <dl class="ozellikler">
+                <dt>Sahibi</dt><dd>@s.BasHarfler</dd>
+                <dt>Eğitim</dt><dd>@s.KursAdi</dd>
+                @if (s.ModelAdi is not null)
+                {
+                    <dt>Cihaz modeli</dt><dd>@s.ModelAdi</dd>
+                }
+                <dt>Veriliş tarihi</dt><dd>@s.VerilisZamani.ToString("d MMMM yyyy", tr)</dd>
+                @if (s.IptalZamani is { } iptal)
+                {
+                    <dt>İptal tarihi</dt><dd>@iptal.ToString("d MMMM yyyy", tr)</dd>
+                }
+                <dt>Numara</dt><dd class="mono">@s.No</dd>
+            </dl>
+            <p class="ipucu ara">Kişisel verilerin korunması için yalnız ad ve soyadın baş harfleri gösterilir.</p>
+        </section>
+    }
+    else
+    {
+        @if (Model.No is not null)
+        {
+            <div class="bildirim uyari" role="alert"><p>Bu numarayla kayıtlı bir sertifika bulunamadı. Numarayı kontrol edin.</p></div>
+        }
+        <form method="get" action="/sertifika" class="kart" data-sertifika-form>
+            <div class="alan">
+                <label for="no">Sertifika numarası</label>
+                <div class="satir">
+                    <input id="no" name="no" type="text" autocomplete="off" spellcheck="false" maxlength="40" required />
+                    <button class="dugme" type="submit">Doğrula</button>
+                </div>
+            </div>
+        </form>
+    }
+</div>

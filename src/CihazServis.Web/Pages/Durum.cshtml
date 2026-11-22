@@ -1,6 +1,7 @@
 @page "/durum/{kod:int}"
+@model DurumModel
 @{
-    var kod = (int)(RouteData.Values["kod"] is string s && int.TryParse(s, out var k) ? k : 500);
+    var kod = Model.Kod;
     var (baslik, aciklama) = kod switch
     {
         403 => ("Bu sayfaya erişiminiz yok", "Bu içerik başka bir hesaba ait ya da henüz açılmadı. Eğitimdeyseniz önceki adımı tamamlayın."),

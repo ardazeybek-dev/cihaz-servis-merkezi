@@ -1,0 +1,64 @@
+@page "/egitim"
+@model CihazServis.Web.Pages.Egitim.IndexModel
+@using CihazServis.Application.Egitim
+@{
+    ViewData["Title"] = "Eğitim";
+}
+<div class="ust-baslik">
+    <div class="etiket">Kullanım eğitimi</div>
+    <h1>Eğitimleriniz</h1>
+    <p>Dersler sırayla açılır. Her dersin videosunu izleyin, ardından beş soruyu yanıtlayın. Tüm dersleri bitirdiğinizde kullanım sertifikanız hazırlanır.</p>
+</div>
+
+@foreach (var k in Model.Kurslar)
+{
+    var biten = k.Dersler.Count(d => d.Asama == DersAsamasi.Tamamlandi);
+    <section class="kart" aria-labelledby="kurs-@k.KursId">
+        <div class="yatay">
+            <h2 id="kurs-@k.KursId">@k.Ad</h2>
+            <span class="rozet @(biten == k.Dersler.Count ? "basari" : "vurgu")">@biten / @k.Dersler.Count ders</span>
+        </div>
+        <p class="soluk">@k.Aciklama</p>
+        <ol class="adimlar">
+            @foreach (var d in k.Dersler)
+            {
+                var (sinif, isaret, durum) = d.Asama switch
+                {
+                    DersAsamasi.Tamamlandi => ("tamam", "✓", "Tamamlandı"),
+                    DersAsamasi.QuizAcik => ("acik", d.Sira.ToString(), "Video izlendi, sorular sizi bekliyor"),
+                    DersAsamasi.VideoAcik => ("acik", d.Sira.ToString(), d.IzlenenOran > 0 ? $"Videonun %{(int)(d.IzlenenOran * 100)} kısmı izlendi" : "Başlamaya hazır"),
+                    _ => ("kilitli", d.Sira.ToString(), "Önceki ders bitince açılır"),
+                };
+                <li class="@sinif" data-ders="@d.DersId" data-asama="@d.Asama">
+                    <span class="durum-isaret" aria-hidden="true">@isaret</span>
+                    <span class="ad"><strong>@d.Baslik</strong><br /><span class="ipucu">@durum</span></span>
+                    @switch (d.Asama)
+                    {
+                        case DersAsamasi.VideoAcik:
+                            <a class="dugme kucuk" href="/egitim/ders/@d.DersId">İzle</a>
+                            break;
+                        case DersAsamasi.QuizAcik:
+                            <a class="dugme kucuk" href="/egitim/quiz/@d.DersId">Soruları çöz</a>
+                            break;
+                        case DersAsamasi.Tamamlandi:
+                            <a class="dugme ikincil kucuk" href="/egitim/ders/@d.DersId">Tekrar izle</a>
+                            break;
+                        default:
+                            <span class="rozet">Kilitli</span>
+                            break;
+                    }
+                </li>
+            }
+        </ol>
+        @if (k.SertifikaNo is not null)
+        {
+            <div class="bildirim basari ara">
+                <h3>Sertifikanız hazır</h3>
+                <p class="yatay">
+                    <a class="dugme kucuk" href="/egitim/sertifikalar/@k.SertifikaNo/pdf">PDF olarak indir</a>
+                    <a class="dugme ikincil kucuk" href="/sertifika/@k.SertifikaNo">Doğrulama sayfası</a>
+                </p>
+            </div>
+        }
+    </section>
+}

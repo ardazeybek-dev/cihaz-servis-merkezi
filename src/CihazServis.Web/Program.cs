@@ -28,7 +28,10 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseStatusCodePagesWithReExecute("/durum/{0}");
+// API ve medya uçları durum kodunu olduğu gibi döner; yalnız sayfalar için kullanıcı dostu hata sayfası.
+app.UseWhen(
+    ctx => !ctx.Request.Path.StartsWithSegments("/api") && !ctx.Request.Path.StartsWithSegments("/medya"),
+    b => b.UseStatusCodePagesWithReExecute("/durum/{0}"));
 app.UseGuvenlikBasliklari();
 app.UseHttpsRedirection();
 app.UseSerilogRequestLogging(o => o.GetLevel = (ctx, _, ex) =>
@@ -44,6 +47,7 @@ app.MapStaticAssets();
 app.MapRazorPages().WithStaticAssets();
 app.MapOpenApi("/openapi/{documentName}.json");
 app.MapApiUclari();
+app.MapEgitimDosyaUclari();
 app.MapGet("/saglik", () => Results.Text("ok")).ExcludeFromDescription();
 
 app.Run();

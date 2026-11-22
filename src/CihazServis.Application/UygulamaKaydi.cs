@@ -9,6 +9,9 @@ public static class UygulamaKaydi
     {
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<DogrulamaServisi>();
+        services.AddScoped<Egitim.EgitimServisi>();
+        services.AddScoped<Egitim.QuizServisi>();
+        services.AddScoped<Egitim.SertifikaServisi>();
         return services;
     }
 }
