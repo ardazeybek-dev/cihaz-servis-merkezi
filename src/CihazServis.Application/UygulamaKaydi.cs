@@ -1,0 +1,14 @@
+using CihazServis.Application.Dogrulama;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace CihazServis.Application;
+
+public static class UygulamaKaydi
+{
+    public static IServiceCollection AddUygulama(this IServiceCollection services)
+    {
+        services.AddSingleton(TimeProvider.System);
+        services.AddScoped<DogrulamaServisi>();
+        return services;
+    }
+}

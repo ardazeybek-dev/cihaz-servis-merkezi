@@ -1,0 +1,30 @@
+# Derleme çıktıları
+bin/
+obj/
+publish/
+artifacts/
+*.user
+*.suo
+.vs/
+.vscode/
+.idea/
+TestResults/
+playwright-traces/
+
+# Gizli bilgiler ve yerel ayarlar
+.env
+.env.*
+appsettings.*.local.json
+*.pfx
+*.key
+secrets.json
+
+# Çalışma anında oluşan veriler
+storage/
+media/
+logs/
+*.log
+
+# Proje dışı belgeler bu depoya girmez
+*.pdf
+!docs/**/*.pdf

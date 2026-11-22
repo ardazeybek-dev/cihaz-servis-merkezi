@@ -1,0 +1,23 @@
+@page "/durum/{kod:int}"
+@{
+    var kod = (int)(RouteData.Values["kod"] is string s && int.TryParse(s, out var k) ? k : 500);
+    var (baslik, aciklama) = kod switch
+    {
+        403 => ("Bu sayfaya erişiminiz yok", "Bu içerik başka bir hesaba ait ya da henüz açılmadı. Eğitimdeyseniz önceki adımı tamamlayın."),
+        404 => ("Sayfa bulunamadı", "Aradığınız sayfa ya da kayıt yok. Adresi kontrol edin ya da ana sayfadan devam edin."),
+        429 => ("Biraz bekleyin", "Kısa sürede çok fazla deneme yapıldı. Lütfen biraz bekleyip tekrar deneyin."),
+        _ => ("Bir sorun oluştu", "İsteğiniz şu an tamamlanamadı. Biraz sonra yeniden deneyin."),
+    };
+    ViewData["Title"] = baslik;
+}
+<div class="dar-blok">
+    <div class="ust-baslik">
+        <div class="etiket">Hata @kod</div>
+        <h1>@baslik</h1>
+        <p>@aciklama</p>
+    </div>
+    <div class="yatay">
+        <a class="dugme" href="/">Ana sayfa</a>
+        <a class="dugme ikincil" href="/servis/talep">Servis talebi aç</a>
+    </div>
+</div>

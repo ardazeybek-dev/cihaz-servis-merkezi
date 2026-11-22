@@ -1,0 +1,58 @@
+@page "/giris"
+@model GirisModel
+@{
+    ViewData["Title"] = "Giriş";
+}
+<div class="izgara">
+    <div class="g4">
+        <div class="ust-baslik">
+            <div class="etiket">Hesabınız</div>
+            <h1>Giriş yapın</h1>
+            <p>Eğitim, sertifika ve yönetim ekranları giriş gerektirir. Garanti sorgusu ve servis talebi için giriş yapmanız gerekmez.</p>
+        </div>
+        <form method="post" class="kart dar-blok" novalidate>
+            @if (Model.Hatali)
+            {
+                <div class="bildirim hata" role="alert" tabindex="-1" data-odakla>
+                    <p>E-posta adresi ya da şifre hatalı.</p>
+                </div>
+            }
+            else if (!ViewData.ModelState.IsValid)
+            {
+                <div class="bildirim hata" role="alert" tabindex="-1" data-odakla>
+                    <h2>Formda düzeltilmesi gereken bir alan var</h2>
+                    <ul>
+                        @foreach (var hata in ViewData.ModelState.Where(m => m.Value!.Errors.Count > 0))
+                        {
+                            <li><a href="#@hata.Key">@hata.Value!.Errors[0].ErrorMessage</a></li>
+                        }
+                    </ul>
+                </div>
+            }
+            <input type="hidden" asp-for="ReturnUrl" />
+            <div class="alan">
+                <label asp-for="Eposta"></label>
+                <input asp-for="Eposta" type="email" autocomplete="username" />
+                <span asp-validation-for="Eposta" class="alan-hata"></span>
+            </div>
+            <div class="alan">
+                <label asp-for="Sifre"></label>
+                <input asp-for="Sifre" type="password" autocomplete="current-password" />
+                <span asp-validation-for="Sifre" class="alan-hata"></span>
+            </div>
+            <button class="dugme" type="submit">Giriş yap</button>
+        </form>
+    </div>
+    <aside class="g2">
+        <div class="kart">
+            <h2>Demo hesapları</h2>
+            <p class="soluk">Bu örnek uygulamayı denemek için bir hesap seçin. Şifre hepsinde <code>@CihazServis.Infrastructure.Veri.DemoVeriTohumlayici.DemoSifre</code></p>
+            <div class="hesaplar">
+                <button class="dugme ikincil kucuk" type="button" data-demo-hesap="musteri@ornek-klinik.test">Müşteri · Örnek Klinik</button>
+                <button class="dugme ikincil kucuk" type="button" data-demo-hesap="musteri@ornek-spor.test">Müşteri · Örnek Spor Salonu</button>
+                <button class="dugme ikincil kucuk" type="button" data-demo-hesap="personel@servis.test">Servis personeli</button>
+                <button class="dugme ikincil kucuk" type="button" data-demo-hesap="yonetici@servis.test">Yönetici</button>
+            </div>
+        </div>
+    </aside>
+</div>

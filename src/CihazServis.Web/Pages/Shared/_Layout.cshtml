@@ -1,0 +1,63 @@
+﻿@{
+    var yol = Context.Request.Path.Value ?? "/";
+    string? Aktif(string onek) => (onek == "/" ? yol == "/" : yol.StartsWith(onek, StringComparison.OrdinalIgnoreCase)) ? "page" : null;
+    var girisli = User.Identity?.IsAuthenticated == true;
+    var personel = User.IsInRole("Personel") || User.IsInRole("Yonetici");
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@(ViewData["Title"] is string t ? $"{t} · Cihaz Servis Merkezi" : "Cihaz Servis Merkezi")</title>
+    <meta name="description" content="@(ViewData["Aciklama"] ?? "Garanti sorgusu, servis talebi, talep durumu ve cihaz kullanım eğitimi.")" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="icon" href="~/favicon.svg" type="image/svg+xml" />
+</head>
+<body>
+    <a class="gizli-baglanti" href="#icerik">İçeriğe geç</a>
+    <div class="demo-serit">Örnek veridir, gerçek müşteri verisi içermez.</div>
+    <header class="ust">
+        <div class="kap">
+            <a class="marka" href="/"><span class="marka-isaret" aria-hidden="true">CS</span> Cihaz Servis Merkezi</a>
+            <nav aria-label="Ana menü">
+                <ul class="menu">
+                    <li><a href="/garanti" aria-current="@Aktif("/garanti")">Garanti sorgula</a></li>
+                    <li><a href="/servis/talep" aria-current="@Aktif("/servis/talep")">Servis talebi</a></li>
+                    <li><a href="/servis/durum" aria-current="@Aktif("/servis/durum")">Talep durumu</a></li>
+                    <li><a href="/egitim" aria-current="@Aktif("/egitim")">Eğitim</a></li>
+                    @if (personel)
+                    {
+                        <li><a href="/yonetim" aria-current="@Aktif("/yonetim")">Yönetim</a></li>
+                    }
+                    @if (girisli)
+                    {
+                        <li>
+                            <form method="post" action="/cikis">
+                                <button type="submit">Çıkış</button>
+                            </form>
+                        </li>
+                    }
+                    else
+                    {
+                        <li><a href="/giris" aria-current="@Aktif("/giris")">Giriş</a></li>
+                    }
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main id="icerik" tabindex="-1">
+        <div class="kap">
+            @RenderBody()
+        </div>
+    </main>
+    <footer class="alt">
+        <div class="kap">
+            <span>Cihaz Servis Merkezi · örnek uygulama</span>
+            <span><a href="/aydinlatma-metni">Aydınlatma metni</a> · <a href="/openapi/v1.json">API belgesi</a></span>
+        </div>
+    </footer>
+    <script src="~/js/site.js" asp-append-version="true" defer></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
