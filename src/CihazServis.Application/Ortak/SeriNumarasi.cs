@@ -25,12 +25,14 @@ public static class SeriNumarasi
                 continue;
             }
 
-            // Kültürden bağımsız büyük harf: tr-TR'de "i" -> "İ" olur ve eşleşme bozulur.
-            sb.Append(char.ToUpperInvariant(c));
-            if (sb.Length > AzamiUzunluk)
+            // Sütun en fazla AzamiUzunluk karakter: fazlası kesilir, geçerli seri 11 karakter olduğundan yanlış eşleşme oluşmaz.
+            if (sb.Length == AzamiUzunluk)
             {
                 break;
             }
+
+            // Kültürden bağımsız büyük harf: tr-TR'de "i" -> "İ" olur ve eşleşme bozulur.
+            sb.Append(char.ToUpperInvariant(c));
         }
 
         return sb.ToString();

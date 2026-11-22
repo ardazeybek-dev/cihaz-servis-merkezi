@@ -115,6 +115,7 @@ public sealed class YonetimTestleri(SqlKonteyner sql) : IAsyncLifetime
         Assert.Equal(HttpStatusCode.OK, personel.StatusCode);
         Assert.Equal("image/jpeg", personel.Content.Headers.ContentType?.MediaType);
         Assert.Equal("attachment", personel.Content.Headers.ContentDisposition?.DispositionType);
+        Assert.StartsWith("sandbox", personel.Headers.GetValues("Content-Security-Policy").Single());
         Assert.Equal(DosyaImzasiTestleri.Jpeg, await personel.Content.ReadAsByteArrayAsync());
         Assert.True(await _f.VeriAsync(db => db.DenetimKayitlari.AnyAsync(d => d.Islem == "EkIndirildi" && d.VarlikNo == no)));
 
@@ -135,6 +136,13 @@ public sealed class YonetimTestleri(SqlKonteyner sql) : IAsyncLifetime
     }
 
     [Fact]
+    public void Testlerde_hangfire_kurulmaz()
+    {
+        _ = _f.Services;
+        Assert.Null(_f.Services.GetService<Hangfire.IBackgroundJobClient>());
+    }
+
+    [Fact]
     public async Task Menudeki_cikis_dugmesi_oturumu_kapatir()
     {
         var c = await Girisli(Personel);
@@ -148,7 +156,7 @@ public sealed class YonetimTestleri(SqlKonteyner sql) : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Denetim_gunlugu_ve_arka_plan_panosu_yalniz_yoneticiye_acik()
+    public async Task Denetim_gunlugu_yalniz_yoneticiye_acik()
     {
         var personel = await (await Girisli(Personel)).GetAsync("/yonetim/denetim");
         Assert.Contains("/durum/403", personel.Headers.Location!.ToString());

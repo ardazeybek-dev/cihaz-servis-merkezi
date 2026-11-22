@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Json;
 using CihazServis.Application.Servis;
 using CihazServis.Application.Varliklar;
 using CihazServis.Tests.Altyapi;
@@ -64,6 +65,18 @@ public sealed class ServisTalebiTestleri(SqlKonteyner sql) : IAsyncLifetime
         Assert.Null(t.CihazId);
         Assert.Equal("yonetici@servis.test", t.Sorumlu.Eposta);
         Assert.Equal(new DateOnly(2026, 11, 27), t.HedefTarih); // Diğer: 5 iş günü
+    }
+
+    [Fact]
+    public async Task Cok_uzun_seri_numarasi_hata_vermez_kesilerek_kaydedilir()
+    {
+        var uzun = new string('X', 40);
+        var yanit = await TalepIstemcisi.GonderAsync(_f.Istemci(), TalepIstemcisi.GecerliAlanlar(uzun, "Diger"));
+        Assert.Equal(HttpStatusCode.Redirect, yanit.StatusCode);
+        Assert.Equal(new string('X', 32), (await SonTalep()).SeriNo);
+
+        var api = await _f.Istemci().PostAsJsonAsync("/api/v1/dogrulama", new { seriNo = new string('A', 300) });
+        Assert.Equal(HttpStatusCode.OK, api.StatusCode);
     }
 
     [Fact]

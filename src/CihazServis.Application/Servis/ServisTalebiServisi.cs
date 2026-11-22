@@ -65,7 +65,7 @@ public sealed class ServisTalebiServisi(
 {
     public const int AzamiEk = 3;
     public const long AzamiEkBoyutu = 10 * 1024 * 1024;
-    public const long AzamiToplamEkBoyutu = 25 * 1024 * 1024;
+    public const long AzamiToplamEkBoyutu = AzamiEk * AzamiEkBoyutu;
     public const int AzamiHataliDeneme = 5;
     public static readonly TimeSpan KilitSuresi = TimeSpan.FromMinutes(15);
 
@@ -166,11 +166,8 @@ public sealed class ServisTalebiServisi(
             return Sonuc<List<(EkGirdisi, DosyaTuru)>>.Gecersiz("ekSayisi", $"En fazla {AzamiEk} dosya ekleyebilirsiniz.");
         }
 
-        if (ekler.Sum(e => e.Boyut) > AzamiToplamEkBoyutu)
-        {
-            return Sonuc<List<(EkGirdisi, DosyaTuru)>>.Gecersiz("ekBoyutu", $"Eklerin toplamı {AzamiToplamEkBoyutu / 1024 / 1024} MB'ı geçemez.");
-        }
-
+        // Toplam sınır (AzamiEk x AzamiEkBoyutu) tek tek sınırlardan türer; dosya başına denetim
+        // kullanıcıya hangi dosyanın büyük olduğunu söyler. İstek boyutu sınırı bu toplamın biraz üstündedir.
         var liste = new List<(EkGirdisi, DosyaTuru)>();
         Span<byte> bas = stackalloc byte[DosyaImzasi.OkunacakBayt];
         foreach (var ek in ekler)

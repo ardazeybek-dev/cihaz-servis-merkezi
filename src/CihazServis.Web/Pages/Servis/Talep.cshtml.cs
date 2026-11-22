@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace CihazServis.Web.Pages.Servis;
 
 [EnableRateLimiting(Politikalar.HizForm)]
-[RequestSizeLimit(ServisTalebiServisi.AzamiToplamEkBoyutu + (2 * 1024 * 1024))]
+[RequestSizeLimit(ServisTalebiServisi.AzamiToplamEkBoyutu + (2 * 1024 * 1024))] // web.config'te maxAllowedContentLength da en az bu kadar olmalı
 public class TalepModel(ServisTalebiServisi servis) : PageModel
 {
     [BindProperty(SupportsGet = true)]

@@ -1,4 +1,4 @@
-@page "/servis/talep"
+﻿@page "/servis/talep"
 @model CihazServis.Web.Pages.Servis.TalepModel
 @using CihazServis.Application.Servis
 @using CihazServis.Application.Varliklar
@@ -46,6 +46,7 @@
         <div class="alan">
             <label for="Ekler">Fotoğraf, video ya da belge (isteğe bağlı)</label>
             <input id="Ekler" name="Ekler" type="file" multiple accept=".jpg,.jpeg,.png,.pdf,.mp4"
+                   data-azami-adet="@ServisTalebiServisi.AzamiEk" data-azami-bayt="@ServisTalebiServisi.AzamiEkBoyutu"
                    aria-describedby="ek-ipucu" aria-invalid="@Gecersiz("Ekler")" />
             <span class="ipucu" id="ek-ipucu">En fazla @ServisTalebiServisi.AzamiEk dosya, her biri en fazla @(ServisTalebiServisi.AzamiEkBoyutu / 1024 / 1024) MB. JPG, PNG, PDF ya da MP4.</span>
             <span asp-validation-for="Ekler" class="alan-hata"></span>

@@ -25,7 +25,12 @@ public static class GuvenlikBasliklari
         ctx.Response.OnStarting(() =>
         {
             var h = ctx.Response.Headers;
-            h.ContentSecurityPolicy = ctx.Request.IsHttps ? csp + "; upgrade-insecure-requests" : csp;
+            // Uç kendi politikasını koyduysa (ör. ek indirmede sandbox) ezilmez.
+            if (string.IsNullOrEmpty(h.ContentSecurityPolicy))
+            {
+                h.ContentSecurityPolicy = ctx.Request.IsHttps ? csp + "; upgrade-insecure-requests" : csp;
+            }
+
             h.XContentTypeOptions = "nosniff";
             h.XFrameOptions = "DENY";
             h["Referrer-Policy"] = "strict-origin-when-cross-origin";

@@ -1,10 +1,11 @@
-@page "/durum/{kod:int}"
+﻿@page "/durum/{kod:int}"
 @model DurumModel
 @{
     var kod = Model.Kod;
     var (baslik, aciklama) = kod switch
     {
         403 => ("Bu sayfaya erişiminiz yok", "Bu içerik başka bir hesaba ait ya da henüz açılmadı. Eğitimdeyseniz önceki adımı tamamlayın."),
+        413 => ("Dosyalar çok büyük", "Eklerin toplamı sınırı aştı. Her dosya en fazla 10 MB, en fazla 3 dosya ekleyebilirsiniz. Geri dönüp daha küçük dosya seçin."),
         404 => ("Sayfa bulunamadı", "Aradığınız sayfa ya da kayıt yok. Adresi kontrol edin ya da ana sayfadan devam edin."),
         429 => ("Biraz bekleyin", "Kısa sürede çok fazla deneme yapıldı. Lütfen biraz bekleyip tekrar deneyin."),
         _ => ("Bir sorun oluştu", "İsteğiniz şu an tamamlanamadı. Biraz sonra yeniden deneyin."),

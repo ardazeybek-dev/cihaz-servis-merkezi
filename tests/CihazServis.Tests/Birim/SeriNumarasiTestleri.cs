@@ -35,7 +35,7 @@ public class SeriNumarasiTestleri
 
     [Fact]
     public void Normalize_asiri_uzun_girdiyi_keser()
-        => Assert.True(SeriNumarasi.Normalize(new string('A', 5000)).Length <= SeriNumarasi.AzamiUzunluk + 1);
+        => Assert.True(SeriNumarasi.Normalize(new string('A', 5000)).Length <= SeriNumarasi.AzamiUzunluk);
 
     [Fact]
     public void Goster_etiket_bicimine_cevirir()
