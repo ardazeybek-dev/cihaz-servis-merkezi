@@ -34,7 +34,8 @@ public sealed class DurumSorgusuTestleri(SqlKonteyner sql) : IAsyncLifetime
         Assert.Equal(DemoVeriTohumlayici.DemoTalepAcik, j.GetProperty("no").GetString());
         Assert.Equal("serviste", j.GetProperty("durum").GetString());
         Assert.Equal("Demo Cihaz A100", j.GetProperty("modelAdi").GetString());
-        Assert.Equal("2026-11-18", j.GetProperty("tahminiTarih").GetString());
+        // Fabrikanın saati 20 Kasım 2026 Cuma: tohumlanan açık talebin hedefi 2 iş günü sonrası, 24 Kasım Salı.
+        Assert.Equal("2026-11-24", j.GetProperty("tahminiTarih").GetString());
         var cizelge = j.GetProperty("cizelge").EnumerateArray().Select(a => a.GetProperty("durum").GetString()).ToList();
         Assert.Equal(["alindi", "inceleniyor", "parcaBekleniyor", "serviste"], cizelge);
         Assert.Contains("Değişecek elektrot plakası sipariş edildi.", ham);

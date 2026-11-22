@@ -16,6 +16,15 @@ public sealed class IsGunuTakvimiTestleri
     public void Hafta_sonu_ve_sabit_tatiller_atlanir(string bas, int gun, string beklenen)
         => Assert.Equal(DateOnly.Parse(beklenen), IsGunuTakvimi.Ekle(DateOnly.Parse(bas), gun));
 
+    [Theory]
+    [InlineData("2026-11-23", 1, "2026-11-20")] // Pazartesi - 1 = Cuma
+    [InlineData("2026-11-20", 8, "2026-11-10")]
+    [InlineData("2026-10-30", 1, "2026-10-28")] // 29 Ekim atlanır
+    [InlineData("2027-01-04", 1, "2026-12-31")] // hafta sonu + 1 Ocak
+    [InlineData("2026-11-20", 0, "2026-11-20")]
+    public void Geri_sayimda_da_tatiller_atlanir(string bas, int gun, string beklenen)
+        => Assert.Equal(DateOnly.Parse(beklenen), IsGunuTakvimi.Cikar(DateOnly.Parse(bas), gun));
+
     [Fact]
     public void Plus_hizmet_seviyesi_hedefi_bir_gun_kisaltir()
     {

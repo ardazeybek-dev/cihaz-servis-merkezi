@@ -110,6 +110,23 @@ public static class IsGunuTakvimi
 
         return t;
     }
+
+    /// <summary>Başlangıç gününü saymadan <paramref name="gun"/> iş günü geri gider.</summary>
+    public static DateOnly Cikar(DateOnly baslangic, int gun)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(gun);
+        var t = baslangic;
+        while (gun > 0)
+        {
+            t = t.AddDays(-1);
+            if (IsGunuMu(t))
+            {
+                gun--;
+            }
+        }
+
+        return t;
+    }
 }
 
 public static class Telefon

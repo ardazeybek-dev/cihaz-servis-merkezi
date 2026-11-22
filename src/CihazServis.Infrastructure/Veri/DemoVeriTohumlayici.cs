@@ -1,4 +1,5 @@
 using CihazServis.Application.Ortak;
+using CihazServis.Application.Servis;
 using CihazServis.Application.Varliklar;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,7 @@ namespace CihazServis.Infrastructure.Veri;
 /// Yalnız demo ve geliştirme ortamı için uydurma örnek veri. Gerçek bir firmaya,
 /// kişiye ya da cihaza ait değildir.
 /// </summary>
-public sealed class DemoVeriTohumlayici(UygulamaDbContext db, IPasswordHasher<Kullanici> hasher)
+public sealed class DemoVeriTohumlayici(UygulamaDbContext db, IPasswordHasher<Kullanici> hasher, TimeProvider saat)
 {
     public const string DemoSifre = "Demo.2026!";
 
@@ -48,20 +49,26 @@ public sealed class DemoVeriTohumlayici(UygulamaDbContext db, IPasswordHasher<Ku
 
         var c1 = await db.Cihazlar.FirstAsync(c => c.SeriNo == "DMOA2400001", ct);
         var c3 = await db.Cihazlar.FirstAsync(c => c.SeriNo == "DMOB2500003", ct);
-        DateTimeOffset Z(int gun, int saat) => new(2026, 11, gun, saat, 0, 0, TimeSpan.Zero);
+        // Tarihler tohumlama gününe göre kurulur: demo hangi gün açılırsa açılsın açık talep süresinde,
+        // kapalı talep birkaç gün önce tamamlanmış görünür. Saatler Türkiye saatiyle.
+        var bugun = TurkiyeSaati.Bugun(saat.GetUtcNow());
+        DateTimeOffset Z(int isGunuOnce, int trSaat)
+            => new DateTimeOffset(IsGunuTakvimi.Cikar(bugun, isGunuOnce).ToDateTime(new TimeOnly(trSaat, 0)), TurkiyeSaati.Fark).ToUniversalTime();
 
         var acik = Talep(DemoTalepAcik, c1, TalepKonusu.Ariza, "Ölçüm sırasında ekranda E-21 hata kodu çıkıyor, ölçüm yarıda kalıyor.",
-            "Ayşe Yılmaz", "Örnek Klinik Kadıköy", "5550001234", "musteri@ornek-klinik.test", Z(16, 7), new DateOnly(2026, 11, 18), personel);
-        acik.Hareketler.Add(H(TalepDurumu.Alindi, TalepDurumu.Inceleniyor, Z(16, 9), "Talebiniz incelemeye alındı.", "E-21 elektrot temas hatası olabilir.", personel));
-        acik.Hareketler.Add(H(TalepDurumu.Inceleniyor, TalepDurumu.ParcaBekleniyor, Z(17, 8), "Değişecek elektrot plakası sipariş edildi.", "Tedarikçi teslim 2 gün dedi.", personel));
-        acik.Hareketler.Add(H(TalepDurumu.ParcaBekleniyor, TalepDurumu.Serviste, Z(19, 11), "Parça geldi, servis ziyareti planlandı.", null, personel));
+            "Ayşe Yılmaz", "Örnek Klinik Kadıköy", "5550001234", "musteri@ornek-klinik.test", Z(3, 10), IsGunuTakvimi.Ekle(bugun, 2), personel);
+        acik.Hareketler.Add(H(TalepDurumu.Alindi, TalepDurumu.Inceleniyor, Z(3, 12), "Talebiniz incelemeye alındı.", "E-21 elektrot temas hatası olabilir.", personel));
+        acik.Hareketler.Add(H(TalepDurumu.Inceleniyor, TalepDurumu.ParcaBekleniyor, Z(2, 11), "Değişecek elektrot plakası sipariş edildi.", "Tedarikçi teslim 2 gün dedi.", personel));
+        acik.Hareketler.Add(H(TalepDurumu.ParcaBekleniyor, TalepDurumu.Serviste, Z(1, 14), "Parça geldi, servis ziyareti planlandı.", null, personel));
         acik.Durum = TalepDurumu.Serviste;
 
+        var kapaliAcilis = IsGunuTakvimi.Cikar(bugun, 8);
         var kapali = Talep(DemoTalepKapali, c3, TalepKonusu.Bakim, "Yıllık periyodik bakım talebi.",
-            "Mehmet Demir", "Örnek Spor Salonu Bornova", "5550005678", "musteri@ornek-spor.test", Z(10, 6), new DateOnly(2026, 11, 16), yonetici);
-        kapali.Hareketler.Add(H(TalepDurumu.Alindi, TalepDurumu.Inceleniyor, Z(10, 10), null, null, yonetici));
-        kapali.Hareketler.Add(H(TalepDurumu.Inceleniyor, TalepDurumu.Serviste, Z(12, 7), "Bakım ziyareti yapılıyor.", null, yonetici));
-        kapali.Hareketler.Add(H(TalepDurumu.Serviste, TalepDurumu.Tamamlandi, Z(12, 13), "Bakım tamamlandı, kalibrasyon kontrol edildi.", "Bir sonraki bakım Kasım 2027.", yonetici));
+            "Mehmet Demir", "Örnek Spor Salonu Bornova", "5550005678", "musteri@ornek-spor.test", Z(8, 9),
+            IsGunuTakvimi.Ekle(kapaliAcilis, TalepKonusuBilgi.HedefIsGunu(TalepKonusu.Bakim, HizmetSeviyesi.Plus)), yonetici);
+        kapali.Hareketler.Add(H(TalepDurumu.Alindi, TalepDurumu.Inceleniyor, Z(8, 13), null, null, yonetici));
+        kapali.Hareketler.Add(H(TalepDurumu.Inceleniyor, TalepDurumu.Serviste, Z(6, 10), "Bakım ziyareti yapılıyor.", null, yonetici));
+        kapali.Hareketler.Add(H(TalepDurumu.Serviste, TalepDurumu.Tamamlandi, Z(6, 16), "Bakım tamamlandı, kalibrasyon kontrol edildi.", "Bir sonraki periyodik bakım bir yıl sonra.", yonetici));
         kapali.Durum = TalepDurumu.Tamamlandi;
 
         db.ServisTalepleri.AddRange(acik, kapali);
