@@ -12,12 +12,20 @@ public static class GuvenlikBasliklari
         "media-src 'self' blob:; worker-src 'self' blob:; connect-src 'self'; font-src 'self'; " +
         "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
 
+    /// <summary>
+    /// Hangfire panosu satır içi stil kullanır. Yalnız yöneticiye açık bu yolda stil kuralı gevşetilir,
+    /// betik kuralı aynı kalır.
+    /// </summary>
+    public static readonly string PanoCsp = Csp.Replace("style-src 'self'", "style-src 'self' 'unsafe-inline'", StringComparison.Ordinal);
+
     public static IApplicationBuilder UseGuvenlikBasliklari(this IApplicationBuilder app) => app.Use(async (ctx, next) =>
     {
+        // Yol istek başında okunur: Hangfire panosu yanıt başlamadan Request.Path'i değiştirir.
+        var csp = ctx.Request.Path.StartsWithSegments(ArkaPlanKaydi.PanoYolu) ? PanoCsp : Csp;
         ctx.Response.OnStarting(() =>
         {
             var h = ctx.Response.Headers;
-            h.ContentSecurityPolicy = ctx.Request.IsHttps ? Csp + "; upgrade-insecure-requests" : Csp;
+            h.ContentSecurityPolicy = ctx.Request.IsHttps ? csp + "; upgrade-insecure-requests" : csp;
             h.XContentTypeOptions = "nosniff";
             h.XFrameOptions = "DENY";
             h["Referrer-Policy"] = "strict-origin-when-cross-origin";

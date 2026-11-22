@@ -135,6 +135,19 @@ public sealed class YonetimTestleri(SqlKonteyner sql) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Menudeki_cikis_dugmesi_oturumu_kapatir()
+    {
+        var c = await Girisli(Personel);
+        var sayfa = await c.GetStringAsync("/yonetim");
+        var yanit = await c.PostAsync("/cikis", new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["__RequestVerificationToken"] = Yardimci.AntiforgeryAnahtari(sayfa),
+        }));
+        Assert.Equal(HttpStatusCode.Redirect, yanit.StatusCode);
+        Assert.Equal(HttpStatusCode.Redirect, (await c.GetAsync("/yonetim")).StatusCode);
+    }
+
+    [Fact]
     public async Task Denetim_gunlugu_ve_arka_plan_panosu_yalniz_yoneticiye_acik()
     {
         var personel = await (await Girisli(Personel)).GetAsync("/yonetim/denetim");

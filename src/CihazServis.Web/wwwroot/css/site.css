@@ -82,6 +82,8 @@ main { padding: 2.5rem 0 4rem; }
   background: var(--yuzey); border: 1px solid var(--cizgi); border-radius: var(--yaricap); padding: 1.5rem;
 }
 .kart + .kart { margin-top: 1rem; }
+.izgara > .kart + .kart { margin-top: 0; }
+.izgara + .izgara { margin-top: 1rem; }
 
 .izgara { display: grid; gap: 1rem; grid-template-columns: repeat(6, 1fr); }
 .izgara > * { grid-column: span 6; }

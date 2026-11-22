@@ -3,6 +3,7 @@
 @using CihazServis.Application.Ortak
 @using CihazServis.Application.Servis
 @using CihazServis.Application.Varliklar
+@inject TimeProvider Saat
 @{
     var t = Model.Talep!;
     ViewData["Title"] = t.No;
@@ -12,10 +13,14 @@
 <p><a href="/yonetim">← Talep kuyruğu</a></p>
 <div class="ust-baslik">
     <div class="etiket">Servis talebi</div>
-    <h1 class="mono">@t.No</h1>
+    <h1><span class="mono">@t.No</span></h1>
     <p class="yatay">
         <span class="rozet @(TalepDurumAkisi.KapaliMi(t.Durum) ? "basari" : "vurgu")" data-durum="@t.Durum">@TalepDurumAkisi.Ad(t.Durum)</span>
         <span class="rozet">@TalepKonusuBilgi.Ad(t.Konu)</span>
+        @if (!TalepDurumAkisi.KapaliMi(t.Durum) && t.HedefTarih < TurkiyeSaati.Bugun(Saat.GetUtcNow()))
+        {
+            <span class="rozet hata">Hedef tarih geçti</span>
+        }
         @if (!t.Dogrulandi)
         {
             <span class="rozet uyari">Seri numarası kayıtlı değil</span>
