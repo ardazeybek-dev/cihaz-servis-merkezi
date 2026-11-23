@@ -65,9 +65,11 @@ code { font-family: var(--mono); font-size: .92em; }
 .gizli-baglanti:focus { left: 1rem; }
 .ekran-okuyucu { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-.demo-serit {
-  background: var(--metin); color: #e8e8e3; font-size: .82rem; text-align: center; padding: .35rem 1rem;
+.demo-rozet {
+  margin-right: auto; font-size: .78rem; font-weight: 600; white-space: nowrap;
+  color: var(--uyari); background: var(--uyari-zemin); border: 1px solid #ecd29a; border-radius: 999px; padding: .15rem .6rem;
 }
+@media (max-width: 520px) { .rozet-ek { display: none; } }
 
 .kap { width: 100%; max-width: 1080px; margin: 0 auto; padding: 0 16px; }
 .kap.dar { max-width: 640px; }
@@ -75,7 +77,7 @@ code { font-family: var(--mono); font-size: .92em; }
 .ust { background: var(--yuzey); }
 @media (min-width: 760px) { .ust { position: sticky; top: 0; z-index: 5; } }
 .ust .kap { display: flex; align-items: center; gap: 1rem; min-height: 64px; flex-wrap: wrap; padding-top: .5rem; padding-bottom: .5rem; }
-.marka { display: flex; align-items: center; gap: .6rem; font-weight: 700; color: var(--metin); text-decoration: none; margin-right: auto; }
+.marka { display: flex; align-items: center; gap: .6rem; font-weight: 700; color: var(--metin); text-decoration: none; }
 .marka-isaret { width: 32px; height: 32px; flex: none; }
 .marka-isaret rect { fill: var(--vurgu); }
 .marka-isaret path { fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
@@ -514,11 +516,11 @@ main:not(.tam) { padding-top: 0; }
 }
 main > .kap > p:first-child { position: relative; margin: 0; padding-top: 1.25rem; }
 main > .kap > p:first-child + .ust-baslik, main > .kap > p:first-child + .izgara .ust-baslik { padding-top: 1rem; }
-main > .kap > p:first-child::before,
+/* Sayfa başı: tam genişlik renkli blok yok, nötr zemin ve alt çizgi; renk yalnız görsel kutusunda */
 .ust-baslik::before {
   content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; width: 100vw;
   left: calc(min(0px, (1080px - 100vw) / 2) - 16px);
-  background: #dbe8e5;
+  border-bottom: 1px solid var(--cizgi);
 }
 .ust-baslik > :not(.ust-gorsel) { grid-column: 1; max-width: 60ch; }
 .ust-baslik h1 { font-size: clamp(2.1rem, 1.3rem + 2.8vw, 3.4rem); letter-spacing: -.04em; line-height: 1.02; margin-bottom: .4em; }
@@ -527,7 +529,7 @@ main > .kap > p:first-child::before,
 .ust-gorsel { display: none; }
 @media (min-width: 760px) {
   .ust-baslik:has(.ust-gorsel) { grid-template-columns: minmax(0, 1fr) auto; }
-  .ust-gorsel { display: block; grid-column: 2; grid-row: 1 / span 4; width: 240px; }
+  .ust-gorsel { display: block; grid-column: 2; grid-row: 1 / span 4; width: 300px; background: #dbe8e5; border-radius: 18px; padding: 2.4rem 1.8rem; }
   .dar-blok > .ust-baslik { width: min(1048px, calc(100vw - 32px)); }
 }
 .ust-gorsel .seri-etiketi { transform: rotate(-3deg); }
