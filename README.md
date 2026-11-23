@@ -6,6 +6,13 @@
 
 *English summary at the bottom.*
 
+## Canlı demo ve tanıtım videosu
+
+- Canlı demo: https://130-94-1-165.sslip.io (demo hesapları giriş sayfasında, veriler her gece 04.00'te örnek hâline döner)
+- 2 dakikalık ekran kaydı: garanti sorgusu → servis talebi → e-posta → yönetimde durum değişikliği → durum sorgusu ve kilit → ileri sarılamayan eğitim videosu → quiz → karekodlu sertifika
+
+[![Tanıtım videosu](docs/tanitim.jpg)](https://github.com/ardazeybek-dev/cihaz-servis-merkezi/releases/tag/tanitim)
+
 ## Neler var
 
 | Bölüm | Ne yapıyor |
@@ -145,7 +152,7 @@ docker compose up -d --build
 
 ## English summary
 
-Sample customer-facing app for a measurement-device vendor, built on **ASP.NET Core 10 Razor Pages, MS SQL Server and EF Core**, ready for IIS/Plesk hosting. All data is fictional.
+Sample customer-facing app for a measurement-device vendor, built on **ASP.NET Core 10 Razor Pages, MS SQL Server and EF Core**, ready for IIS/Plesk hosting. All data is fictional. Live demo: https://130-94-1-165.sslip.io, 2-minute walkthrough video: [release "tanitim"](https://github.com/ardazeybek-dev/cihaz-servis-merkezi/releases/tag/tanitim).
 
 - **Warranty lookup** by serial number with input normalisation, per-IP rate limiting, honeypot field and no personal data in responses.
 - **Service tickets**: anonymous form, attachments validated by file signature, privacy-notice consent with version, collision-free ticket numbers, assignment rules, e-mail notifications via Hangfire + MailKit.
