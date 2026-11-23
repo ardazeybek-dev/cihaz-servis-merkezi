@@ -14,6 +14,7 @@ playwright-traces/
 # Gizli bilgiler ve yerel ayarlar
 .env
 .env.*
+!.env.ornek
 appsettings.*.local.json
 *.pfx
 *.key
@@ -22,6 +23,7 @@ secrets.json
 # Çalışma anında oluşan veriler
 storage/
 media/
+deploy/medya/
 logs/
 *.log
 

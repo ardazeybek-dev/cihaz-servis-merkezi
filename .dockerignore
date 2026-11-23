@@ -1,0 +1,15 @@
+**/bin/
+**/obj/
+.git/
+.github/
+.vs/
+.vscode/
+artifacts/
+publish/
+media/
+storage/
+tests/
+deploy/
+**/*.user
+.env
+.env.*

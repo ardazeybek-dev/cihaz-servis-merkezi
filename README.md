@@ -36,6 +36,7 @@ tests/
 scripts/
   medya-uret.sh               Demo eğitim videolarını ffmpeg ile üretir (HLS + altyazı)
   publish.ps1                 IIS/Plesk yayın paketi + idempotent veritabanı betiği
+deploy/                       Linux sunucuda Docker ile demo: compose, Caddy, gece sıfırlama
 ```
 
 ## Yerelde çalıştırma
@@ -102,6 +103,21 @@ Gizli değerler depoda tutulmaz, sunucuda ortam değişkeni olarak verilir (`:` 
 6. `Depolama__Klasor` ve `Medya__Klasor` web kökü dışında bir klasörü gösterir, uygulama havuzu kimliğine bu klasörlerde yazma/okuma izni verilir.
 
 `web.config` `inprocess` barındırma kullanır, `Server` başlığını kaldırır ve istek boyutunu 34 MB'a çıkarır (IIS varsayılanı 30 MB, form tek istekte 3 × 10 MB ek kabul eder).
+
+## Linux sunucuda demo (Docker)
+
+`deploy/` klasörü tek sunucuda SQL Server Express + uygulama + smtp4dev + Caddy (otomatik HTTPS) kurar. En az 2 GB RAM (4 GB önerilir).
+
+```bash
+git clone <depo> /opt/csm && cd /opt/csm/deploy
+cp .env.ornek .env          # ALAN_ADI, şifre ve anahtarları doldurun
+bash ../scripts/medya-uret.sh deploy/medya   # ffmpeg gerekir, ya da hazır media/ klasörünü deploy/medya olarak kopyalayın
+docker compose up -d --build
+```
+
+- Caddy, istemci IP'sini `X-Forwarded-For` ile iletir. Uygulama bu başlığa yalnız Caddy'nin sabit iç ağ adresinden (`172.30.0.10`) geldiğinde güvenir, böylece hız sınırı ve IP özeti gerçek ziyaretçiye göre çalışır.
+- Gerçek SMTP bağlanmaz, bildirimler `https://posta.<ALAN_ADI>` adresindeki demo posta kutusunda görünür (`.env`'deki kullanıcı ve şifre özetiyle korunur).
+- `deploy/demo-sifirla.sh` veritabanını, ekleri ve posta kutusunu silip demo verisini yeniden kurar. Cron ile her gece çalıştırılır: `0 1 * * * /opt/csm/deploy/demo-sifirla.sh >> /var/log/csm-sifirla.log 2>&1`
 
 ## Güvenlik notları
 

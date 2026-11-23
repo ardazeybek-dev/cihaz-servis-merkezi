@@ -1,0 +1,15 @@
+# Caddy sertifikayı Let's Encrypt'ten kendisi alır ve yeniler. ALAN_ADI "localhost" ise yerel sertifika kullanır.
+# İstemciden gelen X-Forwarded-* başlıkları güvenilmez sayılır, Caddy kendi gördüğü adresi yazar.
+{$ALAN_ADI} {
+	encode zstd gzip
+	reverse_proxy app:8080
+}
+
+# Demo posta kutusu: formdan gönderilen bildirimler burada görünür.
+posta.{$ALAN_ADI} {
+	basic_auth {
+		{$POSTA_KULLANICI} {$POSTA_SIFRE_OZETI}
+	}
+	header X-Robots-Tag "noindex, nofollow"
+	reverse_proxy smtp:80
+}

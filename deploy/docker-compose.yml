@@ -1,0 +1,102 @@
+# Canlı demo: tek Linux sunucuda SQL Server Express + uygulama + smtp4dev + Caddy (otomatik HTTPS).
+# Kurulum ve gece sıfırlama için deploy/README.md'ye bakın. Ayarlar aynı klasördeki .env dosyasından okunur.
+name: csm
+
+x-gunluk: &gunluk
+  logging:
+    driver: json-file
+    options: { max-size: "10m", max-file: "3" }
+
+services:
+  sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
+      MSSQL_MEMORY_LIMIT_MB: "${SQL_BELLEK_MB:-1536}"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:?MSSQL_SA_PASSWORD gerekli}"
+    volumes:
+      - sqlveri:/var/opt/mssql
+    networks: [ic]
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$${MSSQL_SA_PASSWORD}\" -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    <<: *gunluk
+
+  # Gerçek SMTP yok: demo formundan girilen adreslere posta gitmez, hepsi bu kutuda görünür.
+  smtp:
+    image: rnwood/smtp4dev:v3
+    restart: unless-stopped
+    environment:
+      ServerOptions__Database: ""
+      ServerOptions__NumberOfMessagesToKeep: "200"
+      ServerOptions__HostName: "smtp"
+    networks: [ic]
+    <<: *gunluk
+
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: cihaz-servis-merkezi:son
+    restart: unless-stopped
+    depends_on:
+      sql: { condition: service_healthy }
+      smtp: { condition: service_started }
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ConnectionStrings__Veritabani: "Server=sql;Database=CihazServis;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True"
+      Veritabani__OtomatikMigration: "true"
+      Veritabani__DemoVerisi: "true"
+      Guvenlik__IpOzetAnahtari: "${IP_OZET_ANAHTARI:?IP_OZET_ANAHTARI gerekli}"
+      Guvenlik__MedyaImzaAnahtari: "${MEDYA_IMZA_ANAHTARI:?MEDYA_IMZA_ANAHTARI gerekli}"
+      # İstemci IP'si yalnız Caddy'den gelen X-Forwarded-For başlığından alınır (hız sınırı ve IP özeti için).
+      Guvenlik__VekilSunucular__0: "172.30.0.10"
+      Eposta__Sunucu: "smtp"
+      Eposta__Port: "25"
+      Eposta__Guvenlik: "None"
+      Uygulama__GenelAdres: "https://${ALAN_ADI:?ALAN_ADI gerekli}"
+      Hangfire__Etkin: "true"
+      # Demoyu inceleyen kişi birkaç hesaba girip form doldurabilsin diye giriş/form sınırı varsayılanın (5) iki katı.
+      HizSiniri__Form__Limit: "10"
+    volumes:
+      - ekler:/veri/ekler
+      - anahtarlar:/home/app/.aspnet/DataProtection-Keys
+      - ./medya:/veri/medya:ro
+    networks: [ic]
+    <<: *gunluk
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on: [app]
+    environment:
+      ALAN_ADI: "${ALAN_ADI}"
+      POSTA_KULLANICI: "${POSTA_KULLANICI:-demo}"
+      POSTA_SIFRE_OZETI: "${POSTA_SIFRE_OZETI:?POSTA_SIFRE_OZETI gerekli}"
+    ports:
+      - "${HTTP_PORTU:-80}:80"
+      - "${HTTPS_PORTU:-443}:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddyveri:/data
+      - caddyayar:/config
+    networks:
+      ic: { ipv4_address: 172.30.0.10 }
+    <<: *gunluk
+
+networks:
+  ic:
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+
+volumes:
+  sqlveri:
+  ekler:
+  anahtarlar:
+  caddyveri:
+  caddyayar:
