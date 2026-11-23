@@ -128,11 +128,16 @@ docker compose up -d --build
 - Video bölümleri 5 dakikalık imzalı adreslerle verilir, oturum açmadan erişilemez.
 - Denetim günlüğü ve talep hareketleri tablolarında güncelleme/silme veritabanı tetikleyicisiyle engellenir.
 
+## Görseller
+
+- Yazı tipi: Onest (SIL OFL 1.1), `wwwroot/fonts`. İkonlar ve cihaz çizimi bu proje için çizildi (`Pages/Shared/_Ikonlar.cshtml`, `wwwroot/img/cihaz.svg`).
+- Anasayfadaki fotoğraflar temsilîdir, `wwwroot/img/foto`: "Modern medical examination room", Shixart1985, CC BY 2.0 · "Free sports gym photo", rawpixel, CC0 · "Reparieren und Basteln", Wolfgang Stief, CC0 · "Build a buffer - step 2", germanium, CC BY 2.0 (Wikimedia Commons / Openverse). Kırpılıp webp'ye çevrildi.
+
 ## Bilinen tuzaklar
 
 - Yerelde HTTP'de çerez/antiforgery 500 veriyor → `SecurePolicy.SameAsRequest` kullanılıyor; canlıda vekil `X-Forwarded-Proto: https` geçirmeli ve `Guvenlik__VekilSunucular` ayarlanmalı, yoksa çerez Secure olmaz ve tüm istemciler tek hız sınırı kovasına düşer.
-- Satır içi `style=""` ya da `<script>` CSP'ye takılır → hep sınıf ve `wwwroot/js` altındaki dosyalar.
-- `<form action="/x">` antiforgery anahtarı eklemez, gönderim 400 döner → formlarda `asp-page` kullanın.
+- Satır içi `style=""` ya da `<script>` CSP'ye takılır, `<form action="/x">` antiforgery anahtarı eklemez (400) → hep sınıf, `wwwroot/js` altındaki dosyalar ve `asp-page`.
+- Kaydırınca beliren içerik opaklık 0'dan başlarsa axe onu düşük kontrast sayar → giriş hareketinde yalnız `transform` kullanın.
 - Playwright'ın kendi Chromium'u H.264 oynatmaz → E2E testleri kurulu Google Chrome ile çalışır (`E2E_TARAYICI` ile değiştirilebilir).
 - SQL Server varsayılan harmanlaması büyük/küçük harf duyarsız → biçim denetleyen CHECK kısıtlarında `COLLATE Latin1_General_BIN2`.
 

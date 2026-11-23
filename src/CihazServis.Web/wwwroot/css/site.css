@@ -251,7 +251,7 @@ main.tam { padding: 0; }
 }
 .okuma { padding: 2.5rem 16px 0; min-width: 0; }
 @media (min-width: 960px) {
-  .okuma { padding: 4.5rem clamp(32px, 4vw, 72px) 0 max(32px, calc((100vw - 1080px) / 2 + 16px)); }
+  .okuma { padding: 4.5rem clamp(32px, 4vw, 72px) 0 calc(max(0px, (100vw - 1080px) / 2) + 16px); }
 }
 
 .acilis { padding-bottom: clamp(4rem, 8vw, 7.5rem); }
@@ -401,7 +401,7 @@ main.tam { padding: 0; }
   .kapanis { grid-template-areas: "ust"; }
   .kapanis > * { grid-area: ust; }
   .kapanis img { height: min(90svh, 760px); }
-  .kapanis-metin { justify-self: end; align-self: end; width: 40%; padding: 0 max(32px, calc((100vw - 1080px) / 2 + 16px)) clamp(3rem, 8vh, 6rem) 0; }
+  .kapanis-metin { justify-self: end; align-self: end; width: 40%; padding: 0 calc(max(0px, (100vw - 1080px) / 2) + 16px) clamp(3rem, 8vh, 6rem) 0; }
 }
 .kaynaklar { flex-basis: 100%; font-size: .85rem; max-width: 75ch; }
 
