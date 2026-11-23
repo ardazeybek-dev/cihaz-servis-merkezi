@@ -68,6 +68,31 @@
       });
     }, { rootMargin: "-45% 0px -45% 0px" });
     sahneBolumleri.forEach(function (b) { izleyici.observe(b); });
+
+    // Dar ekranda sahne sayfanın en üstünde, bölümlerle yan yana durmaz. Bant göründüğü sürece sahneler sırayla döner.
+    var darEkran = window.matchMedia("(max-width: 959px)");
+    var azHareket = window.matchMedia("(prefers-reduced-motion: reduce)");
+    var sira = Array.prototype.map.call(sahneBolumleri, function (b) { return b.getAttribute("data-sahne"); });
+    var donguZamanlayici = null;
+    var bantGorunur = false;
+    var donguyuAyarla = function () {
+      var calissin = darEkran.matches && !azHareket.matches && bantGorunur;
+      if (calissin && donguZamanlayici === null) {
+        donguZamanlayici = window.setInterval(function () {
+          var simdiki = Math.max(0, sira.indexOf(sahne.getAttribute("data-durum")));
+          sahne.setAttribute("data-durum", sira[(simdiki + 1) % sira.length]);
+        }, 4500);
+      } else if (!calissin && donguZamanlayici !== null) {
+        window.clearInterval(donguZamanlayici);
+        donguZamanlayici = null;
+      }
+    };
+    new IntersectionObserver(function (kayitlar) {
+      bantGorunur = kayitlar[0].isIntersecting;
+      donguyuAyarla();
+    }).observe(sahne);
+    darEkran.addEventListener("change", donguyuAyarla);
+    azHareket.addEventListener("change", donguyuAyarla);
   }
 
   // Örnek değer düğmeleri hedef alanı doldurur.

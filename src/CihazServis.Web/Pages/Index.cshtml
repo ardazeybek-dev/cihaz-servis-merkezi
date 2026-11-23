@@ -122,7 +122,81 @@
 
     <aside class="sahne" aria-hidden="true">
         <div class="sahne-ic">
-            <img class="sahne-cihaz" src="~/img/cihaz.svg" alt="" width="420" height="520" />
+            @* Her bölümün kendi katmanı var. site.js görünen bölüme göre .sahne'ye data-durum yazar, katman ve kart geçişli değişir. *@
+            <div class="katman" data-katman="garanti">
+                <img class="sahne-cihaz" src="~/img/cihaz.svg" alt="" width="420" height="520" />
+            </div>
+
+            <div class="katman" data-katman="talep">
+                <div class="pencere">
+                    <p class="pencere-ust"><span></span><span></span><span></span><span class="pencere-adres">/servis/talep</span></p>
+                    <div class="pencere-ic">
+                        <p class="p-baslik">Servis talebi</p>
+                        <p class="p-alan"><span class="p-etiket">Cihazın seri numarası</span><span class="p-kutu sayi">DMO-A240-0001</span></p>
+                        <div class="p-ikili">
+                            <p class="p-alan"><span class="p-etiket">Konu</span><span class="p-kutu secim">Arıza</span></p>
+                            <p class="p-alan"><span class="p-etiket">Telefon</span><span class="p-kutu sayi">0532 ••• 12 34</span></p>
+                        </div>
+                        <p class="p-alan"><span class="p-etiket">Sorunu anlatın</span><span class="p-kutu uzun">Açılışta ekran donuyor, ölçüm başlamıyor. Fotoğraf ve kısa video ekledim.</span></p>
+                        <ul class="ek-cipleri">
+                            <li>ekran.jpg</li><li>ses.mp4</li><li>rapor.pdf</li>
+                        </ul>
+                        <p class="p-onay"><span class="p-kutucuk"></span>Aydınlatma metnini okudum</p>
+                        <span class="p-dugme">Talebi gönder</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="katman" data-katman="yol">
+                <div class="pencere">
+                    <p class="pencere-ust"><span></span><span></span><span></span><span class="pencere-adres">/servis/durum</span></p>
+                    <div class="pencere-ic">
+                        <p class="p-satir"><span class="p-baslik sayi">SR-2026-000001</span><span class="rozet vurgu">Serviste</span></p>
+                        <ol class="mini-adimlar genis"><li class="tamam"></li><li class="tamam"></li><li class="tamam"></li><li class="simdi"></li><li></li></ol>
+                        <ol class="p-cizelge">
+                            <li class="tamam"><span>Talep alındı</span><span>Pzt 09.12</span></li>
+                            <li class="tamam"><span>İnceleniyor</span><span>Pzt 11.40</span></li>
+                            <li class="tamam"><span>Parça bekleniyor</span><span>Sal 14.05</span></li>
+                            <li class="simdi"><span>Serviste</span><span>Çar 10.30</span></li>
+                        </ol>
+                        <p class="p-satir p-not"><span>Sıradaki adım</span><span>Tamamlandı, tahmini 2 iş günü</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="katman" data-katman="egitim">
+                <div class="pencere koyu">
+                    <div class="p-video">
+                        <img src="~/img/cihaz.svg" alt="" width="420" height="520" loading="lazy" decoding="async" />
+                        <span class="p-altyazi">Ölçüm plakasına çıplak ayakla çıkın.</span>
+                    </div>
+                    <div class="pencere-ic">
+                        <div class="mini-cubuk koyu"><span class="d64"></span></div>
+                        <p class="p-satir p-sure"><span>Ders 2 · Ölçüm</span><span class="sayi">00.26 / 00.40</span></p>
+                        <ol class="p-dersler">
+                            <li class="tamam"><span>1</span>Kurulum<em>%100</em></li>
+                            <li class="simdi"><span>2</span>Ölçüm<em>%64</em></li>
+                            <li><span>3</span>Bakım<em>kilitli</em></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="katman" data-katman="sertifika">
+                <div class="s-belge">
+                    <p class="s-belge-ust">Cihaz Servis Merkezi</p>
+                    <p class="s-belge-baslik">Kullanım Sertifikası</p>
+                    <p class="s-belge-kucuk">Bu belge</p>
+                    <p class="s-belge-ad">Ayşe Yılmaz</p>
+                    <p class="s-belge-kucuk">adlı kullanıcının Demo Cihaz A100 kullanım eğitimindeki tüm dersleri izleyip soruları başarıyla yanıtladığını gösterir.</p>
+                    <div class="s-belge-alt">
+                        <div><span>Kurum</span>Örnek Klinik Kadıköy</div>
+                        <svg class="mini-karekod" viewBox="0 0 7 7" focusable="false">
+                            <path d="M0 0h3v3H0zM4 0h3v3H4zM0 4h3v3H0zM4 4h1v1H4zM6 4h1v1H6zM5 5h1v1H5zM4 6h1v1H4zM6 6h1v1H6z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
 
             <div class="durum-karti" data-kart="garanti">
                 <p class="durum-karti-ust"><span class="nokta basari"></span>Garanti devam ediyor</p>
@@ -132,35 +206,24 @@
             </div>
 
             <div class="durum-karti" data-kart="talep">
-                <p class="durum-karti-ust"><svg class="ikon" focusable="false"><use href="#i-atac" /></svg>Yeni servis talebi</p>
-                <ul class="ek-cipleri">
-                    <li>ekran.jpg</li><li>ses.mp4</li><li>rapor.pdf</li>
-                </ul>
+                <p class="durum-karti-ust"><span class="nokta basari"></span>Talep alındı</p>
+                <p class="sayi">SR-2026-000003</p>
                 <p class="durum-karti-alt"><span>Atanan</span><span>Selin Kaya</span></p>
             </div>
 
             <div class="durum-karti" data-kart="yol">
-                <p class="durum-karti-ust"><svg class="ikon" focusable="false"><use href="#i-rota" /></svg><span class="sayi">SR-2026-000001</span></p>
-                <ol class="mini-adimlar"><li class="tamam"></li><li class="tamam"></li><li class="tamam"></li><li class="simdi"></li><li></li></ol>
-                <p class="durum-karti-alt"><span>Serviste</span><span>Hedef: 2 iş günü</span></p>
+                <p class="durum-karti-ust"><svg class="ikon" focusable="false"><use href="#i-kilit" /></svg>Sorgu kilidi</p>
+                <p class="durum-karti-alt"><span>5 hatalı deneme</span><span>15 dk</span></p>
             </div>
 
-            <div class="durum-karti koyu" data-kart="egitim">
-                <p class="durum-karti-ust"><svg class="ikon" focusable="false"><use href="#i-kilit" /></svg>İleri sarma kapalı</p>
-                <div class="mini-cubuk koyu"><span class="d64"></span></div>
-                <p class="durum-karti-alt"><span>Ders 2 · Ölçüm</span><span class="sayi">00.26 / 00.40</span></p>
+            <div class="durum-karti" data-kart="egitim">
+                <p class="durum-karti-ust"><svg class="ikon" focusable="false"><use href="#i-kilit" /></svg>İleri sarma engellendi</p>
+                <p class="durum-karti-alt"><span>Video döndü</span><span class="sayi">00.26</span></p>
             </div>
 
             <div class="durum-karti" data-kart="sertifika">
-                <div class="yatay">
-                    <svg class="mini-karekod" viewBox="0 0 7 7" focusable="false">
-                        <path d="M0 0h3v3H0zM4 0h3v3H4zM0 4h3v3H0zM4 4h1v1H4zM6 4h1v1H6zM5 5h1v1H5zM4 6h1v1H4zM6 6h1v1H6z" />
-                    </svg>
-                    <div>
-                        <p class="durum-karti-ust">Sertifika geçerli</p>
-                        <p class="durum-karti-alt"><span>Ayşe Yılmaz · 3/3 ders</span></p>
-                    </div>
-                </div>
+                <p class="durum-karti-ust"><span class="nokta basari"></span>Sertifika geçerli</p>
+                <p class="durum-karti-alt"><span>Karekodla, girişsiz</span><span>3/3 ders</span></p>
             </div>
         </div>
     </aside>
