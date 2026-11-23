@@ -2,6 +2,7 @@
 # İstemciden gelen X-Forwarded-* başlıkları güvenilmez sayılır, Caddy kendi gördüğü adresi yazar.
 {$ALAN_ADI} {
 	encode zstd gzip
+	header -Server
 	reverse_proxy app:8080
 }
 

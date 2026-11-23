@@ -48,6 +48,7 @@ services:
       smtp: { condition: service_started }
     environment:
       ASPNETCORE_ENVIRONMENT: "Production"
+      Kestrel__AddServerHeader: "false"
       ConnectionStrings__Veritabani: "Server=sql;Database=CihazServis;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True"
       Veritabani__OtomatikMigration: "true"
       Veritabani__DemoVerisi: "true"

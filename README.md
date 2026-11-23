@@ -117,6 +117,7 @@ docker compose up -d --build
 
 - Caddy, istemci IP'sini `X-Forwarded-For` ile iletir. Uygulama bu başlığa yalnız Caddy'nin sabit iç ağ adresinden (`172.30.0.10`) geldiğinde güvenir, böylece hız sınırı ve IP özeti gerçek ziyaretçiye göre çalışır.
 - Gerçek SMTP bağlanmaz, bildirimler `https://posta.<ALAN_ADI>` adresindeki demo posta kutusunda görünür (`.env`'deki kullanıcı ve şifre özetiyle korunur).
+- Sunucu `mcr.microsoft.com` ya da Docker Hub'a erişemiyorsa (bağlantı sıfırlanıyor): Docker Hub için `/etc/docker/daemon.json`'a `"registry-mirrors": ["https://mirror.gcr.io"]` eklenir, Microsoft imajları yerelde çekilip taşınır: `docker save <imaj> | gzip | ssh root@sunucu 'gunzip | docker load'`, sonra `docker compose up -d --no-build`.
 - `deploy/demo-sifirla.sh` veritabanını, ekleri ve posta kutusunu silip demo verisini yeniden kurar. Cron ile her gece çalıştırılır: `0 1 * * * /opt/csm/deploy/demo-sifirla.sh >> /var/log/csm-sifirla.log 2>&1`
 
 ## Güvenlik notları
