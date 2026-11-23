@@ -3,6 +3,7 @@
     string? Aktif(string onek) => (onek == "/" ? yol == "/" : yol.StartsWith(onek, StringComparison.OrdinalIgnoreCase)) ? "page" : null;
     var girisli = User.Identity?.IsAuthenticated == true;
     var personel = User.IsInRole("Personel") || User.IsInRole("Yonetici");
+    var tamGenislik = ViewData["TamGenislik"] is true;
 }
 <!DOCTYPE html>
 <html lang="tr">
@@ -15,11 +16,12 @@
     <link rel="icon" href="~/favicon.svg" type="image/svg+xml" />
 </head>
 <body>
+    <partial name="_Ikonlar" />
     <a class="gizli-baglanti" href="#icerik">İçeriğe geç</a>
     <div class="demo-serit">Örnek veridir, gerçek müşteri verisi içermez.</div>
     <header class="ust">
         <div class="kap">
-            <a class="marka" href="/"><span class="marka-isaret" aria-hidden="true">CS</span> Cihaz Servis Merkezi</a>
+            <a class="marka" href="/"><svg class="marka-isaret" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="9" /><path d="M6 17h4.5l2.5-6 4.5 11 2.5-5H26" /></svg> Cihaz Servis Merkezi</a>
             <nav aria-label="Ana menü">
                 <ul class="menu">
                     <li><a href="/garanti" aria-current="@Aktif("/garanti")">Garanti sorgula</a></li>
@@ -50,15 +52,23 @@
             </nav>
         </div>
     </header>
-    <main id="icerik" tabindex="-1">
-        <div class="kap">
+    <main id="icerik" tabindex="-1" class="@(tamGenislik ? "tam" : null)">
+        @if (tamGenislik)
+        {
             @RenderBody()
-        </div>
+        }
+        else
+        {
+            <div class="kap">
+                @RenderBody()
+            </div>
+        }
     </main>
     <footer class="alt">
         <div class="kap">
             <span>Cihaz Servis Merkezi · örnek uygulama</span>
             <span><a href="/aydinlatma-metni">Aydınlatma metni</a> · <a href="/openapi/v1.json">API belgesi</a></span>
+            @await RenderSectionAsync("AltNot", required: false)
         </div>
     </footer>
     <script src="~/js/site.js" asp-append-version="true" defer></script>

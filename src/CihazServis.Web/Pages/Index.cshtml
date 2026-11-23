@@ -1,44 +1,181 @@
 ﻿@page
 @{
     ViewData["Title"] = null;
+    ViewData["TamGenislik"] = true;
 }
-<div class="ust-baslik">
-    <div class="etiket">Satış sonrası destek</div>
-    <h1>Cihazınızla ilgili her işlem tek yerde</h1>
-    <p>Garantinizi sorgulayın, arıza için servis talebi açın, talebinizin nerede olduğunu takip edin. Cihazı kullanacak ekip arkadaşlarınız kısa eğitimleri tamamlayıp kullanım sertifikası alabilir.</p>
+<div class="bolunmus">
+    <div class="okuma">
+        <section class="acilis" data-sahne="garanti" aria-labelledby="ana-baslik">
+            <h1 id="ana-baslik">Cihaz servisi tek adreste</h1>
+            <p class="giris-metni">Seri numarasıyla garantiyi görün, arızayı bildirin, talebinizin hangi aşamada olduğunu takip edin. Cihazı kullanacak ekibiniz kısa eğitimlerle sertifika alır.</p>
+
+            <form method="post" asp-page="/Garanti" class="hizli-sorgu" novalidate>
+                <label for="hizli-seri">Cihazın seri numarası</label>
+                <div class="hizli-sorgu-satir">
+                    <input id="hizli-seri" name="SeriNo" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false"
+                           placeholder="ör. DMO-A240-0001" aria-describedby="hizli-ipucu" />
+                    <button class="dugme" type="submit">Garantiyi sorgula</button>
+                </div>
+                <div class="tuzak" aria-hidden="true">
+                    <label for="hizli-website">Bu alanı boş bırakın</label>
+                    <input id="hizli-website" name="Website" tabindex="-1" autocomplete="off" />
+                </div>
+                <p class="ipucu" id="hizli-ipucu">Etiket cihazın arka yüzündedir. Denemek için <button type="button" class="metin-dugme sayi" data-doldur="hizli-seri">DMO-A240-0001</button></p>
+            </form>
+
+            <ul class="kisayollar">
+                <li><a href="/servis/talep">Servis talebi aç</a></li>
+                <li><a href="/servis/durum">Talebim ne durumda</a></li>
+                <li><a href="/egitim">Kullanım eğitimi</a></li>
+            </ul>
+        </section>
+
+        <section class="bolum" data-gir data-sahne="talep" aria-labelledby="menu-baslik">
+            <div class="menu-kagidi">
+                <h2 id="menu-baslik">Hizmetler ve hedef süreler</h2>
+
+                <h3>Giriş gerektirmeyenler</h3>
+                <dl class="liste">
+                    <div><dt><a href="/garanti">Garanti sorgusu</a></dt><dd>anında</dd>
+                        <dd class="aciklama">Model, garanti bitişi ve hizmet seviyesi. Kayıtlı kurumun bilgisi gösterilmez.</dd></div>
+                    <div><dt><a href="/servis/talep">Servis talebi</a></dt><dd>3 dosya eki</dd>
+                        <dd class="aciklama">Fotoğraf, PDF ya da kısa video. Talep açıldığı anda bir personele atanır.</dd></div>
+                    <div><dt><a href="/servis/durum">Talep durumu</a></dt><dd>talep no + son 4 hane</dd>
+                        <dd class="aciklama">Zaman çizelgesi, sıradaki adım ve tahmini tarih. Kişisel veri gösterilmez.</dd></div>
+                </dl>
+
+                <h3>Hedef süreler, iş günü</h3>
+                <dl class="liste">
+                    <div><dt>Arıza</dt><dd>3 gün</dd></div>
+                    <div><dt>Bakım</dt><dd>5 gün</dd></div>
+                    <div><dt>Kurulum</dt><dd>7 gün</dd>
+                        <dd class="aciklama">Plus hizmet seviyesindeki cihazlarda her süre bir gün kısalır. Hafta sonu ve resmî tatiller sayılmaz.</dd></div>
+                </dl>
+
+                <h3>Giriş yaparak</h3>
+                <dl class="liste">
+                    <div><dt><a href="/egitim">Kullanım eğitimi</a></dt><dd>3 ders</dd>
+                        <dd class="aciklama">Her dersin %95'i izlenmeden quiz açılmaz, video ileri sarılamaz.</dd></div>
+                    <div><dt>Sertifika</dt><dd>karekodlu PDF</dd>
+                        <dd class="aciklama">Herkese açık bir sayfadan, giriş yapmadan doğrulanır.</dd></div>
+                </dl>
+            </div>
+        </section>
+
+        <section class="bolum yol" data-gir data-sahne="yol" aria-labelledby="yol-baslik">
+            <div class="yol-metin">
+                <h2 id="yol-baslik">Bir talebin yolu</h2>
+                <p>Her aşama değiştiğinde size e-posta gider. Talep numarası ve telefonunuzun son dört hanesiyle durumu istediğiniz an sorgularsınız. Aynı numarayla 5 hatalı denemede sorgu 15 dakika kilitlenir.</p>
+            </div>
+            <div class="fis" role="group" aria-label="Örnek talep SR-2026-000001">
+                <p class="fis-ust"><span>SR-2026-000001</span><span>Arıza · Plus</span></p>
+                <h3>Pazartesi</h3>
+                <dl class="liste sik">
+                    <div><dt>Talep alındı, Selin Kaya'ya atandı</dt><dd>09.12</dd></div>
+                    <div><dt>İnceleniyor</dt><dd>11.40</dd></div>
+                </dl>
+                <h3>Salı</h3>
+                <dl class="liste sik">
+                    <div><dt>Parça bekleniyor</dt><dd>14.05</dd></div>
+                </dl>
+                <h3>Çarşamba</h3>
+                <dl class="liste sik">
+                    <div><dt>Serviste</dt><dd>10.30</dd></div>
+                </dl>
+                <p class="fis-son"><span>Tamamlandı</span><span>2 iş günü</span></p>
+            </div>
+        </section>
+
+        <section class="bolum mozaik" data-gir data-sahne="egitim" aria-labelledby="kural-baslik">
+            <h2 id="kural-baslik">Kurallar sunucuda işler</h2>
+            <div class="mozaik-izgara">
+                <img src="~/img/foto/tezgah.webp" width="1080" height="1080" loading="lazy" decoding="async"
+                     alt="Ölçü aletleri, lehim malzemesi ve parça çekmeceleriyle dolu bir elektronik onarım tezgâhı" />
+                <div class="karo koyu">
+                    <span class="buyuk-rakam">%95</span>
+                    <p>Video bu kadarı izlenmeden ders tamamlanmış sayılmaz. Süre tarayıcıda değil sunucuda ölçülür.</p>
+                </div>
+                <div class="karo acik">
+                    <span class="buyuk-rakam">10 MB</span>
+                    <p>Ek başına sınır. Dosya türü uzantıdan değil içeriğinden denetlenir.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="bolum yerler" data-gir data-sahne="sertifika" aria-labelledby="yer-baslik">
+            <h2 id="yer-baslik">Klinikte de salonda da</h2>
+            <p>Cihazlar kliniklerde ve spor salonlarında çalışır. Her kurum yalnız kendi cihazlarını görür, başka bir kurumun cihaz sayfası açılmaz.</p>
+            <div class="yer-fotolari">
+                <figure>
+                    <img src="~/img/foto/klinik.webp" width="900" height="900" loading="lazy" decoding="async"
+                         alt="Ultrason cihazı ve muayene masası bulunan aydınlık bir muayene odası" />
+                    <figcaption>Klinik</figcaption>
+                </figure>
+                <figure>
+                    <img src="~/img/foto/salon.webp" width="683" height="683" loading="lazy" decoding="async"
+                         alt="Raflara dizilmiş ağırlık plakaları ve dambıllarla bir spor salonu" />
+                    <figcaption>Spor salonu</figcaption>
+                </figure>
+            </div>
+        </section>
+    </div>
+
+    <aside class="sahne" aria-hidden="true">
+        <div class="sahne-ic">
+            <img class="sahne-cihaz" src="~/img/cihaz.svg" alt="" width="420" height="520" />
+
+            <div class="durum-karti" data-kart="garanti">
+                <p class="durum-karti-ust"><span class="nokta basari"></span>Garanti devam ediyor</p>
+                <p class="sayi">DMO-A240-0001</p>
+                <div class="mini-cubuk"><span class="d72"></span></div>
+                <p class="durum-karti-alt"><span>Plus hizmet</span><span>%72 kaldı</span></p>
+            </div>
+
+            <div class="durum-karti" data-kart="talep">
+                <p class="durum-karti-ust"><svg class="ikon" focusable="false"><use href="#i-atac" /></svg>Yeni servis talebi</p>
+                <ul class="ek-cipleri">
+                    <li>ekran.jpg</li><li>ses.mp4</li><li>rapor.pdf</li>
+                </ul>
+                <p class="durum-karti-alt"><span>Atanan</span><span>Selin Kaya</span></p>
+            </div>
+
+            <div class="durum-karti" data-kart="yol">
+                <p class="durum-karti-ust"><svg class="ikon" focusable="false"><use href="#i-rota" /></svg><span class="sayi">SR-2026-000001</span></p>
+                <ol class="mini-adimlar"><li class="tamam"></li><li class="tamam"></li><li class="tamam"></li><li class="simdi"></li><li></li></ol>
+                <p class="durum-karti-alt"><span>Serviste</span><span>Tahmini: Perşembe</span></p>
+            </div>
+
+            <div class="durum-karti koyu" data-kart="egitim">
+                <p class="durum-karti-ust"><svg class="ikon" focusable="false"><use href="#i-kilit" /></svg>İleri sarma kapalı</p>
+                <div class="mini-cubuk koyu"><span class="d64"></span></div>
+                <p class="durum-karti-alt"><span>Ders 2 · Ölçüm</span><span class="sayi">00.26 / 00.40</span></p>
+            </div>
+
+            <div class="durum-karti" data-kart="sertifika">
+                <div class="yatay">
+                    <svg class="mini-karekod" viewBox="0 0 7 7" focusable="false">
+                        <path d="M0 0h3v3H0zM4 0h3v3H4zM0 4h3v3H0zM4 4h1v1H4zM6 4h1v1H6zM5 5h1v1H5zM4 6h1v1H4zM6 6h1v1H6z" />
+                    </svg>
+                    <div>
+                        <p class="durum-karti-ust">Sertifika geçerli</p>
+                        <p class="durum-karti-alt"><span>Ayşe Yılmaz · 3/3 ders</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
 </div>
 
-<div class="izgara">
-    <a class="kart arac g4" href="/garanti">
-        <span class="numara">01</span>
-        <h2>Garanti sorgula</h2>
-        <p>Seri numarasını yazın, cihazın modelini, garanti bitiş tarihini ve hizmet seviyesini görün. Giriş gerekmez.</p>
-        <span class="git">Sorgulamaya başla →</span>
-    </a>
-    <div class="kart arac g2">
-        <span class="buyuk-rakam">3 adım</span>
-        <p>Seri numarası, sorunun kısa anlatımı ve iletişim bilgisi. Seri numarası kayıtlı olmasa da talep alınır.</p>
+<section class="kapanis" aria-labelledby="kapanis-baslik">
+    <img src="~/img/foto/kart.webp" width="1600" height="1000" loading="lazy" decoding="async"
+         alt="Lehimlenmiş bir devre kartı, dirençler ve kablolar beyaz bir masada" />
+    <div class="kapanis-metin" data-gir>
+        <h2 id="kapanis-baslik">Cihaz mı arızalandı?</h2>
+        <p>Seri numarasını ve sorunu yazın, varsa bir fotoğraf ekleyin. Talep numaranız hemen e-postanıza gelir.</p>
+        <a class="dugme" href="/servis/talep">Servis talebi aç</a>
     </div>
-    <a class="kart arac g3" href="/servis/talep">
-        <span class="numara">02</span>
-        <h2>Servis talebi aç</h2>
-        <p>Arızayı anlatın, fotoğraf ya da kısa video ekleyin. Talep açıldığı anda sorumlu bir personele atanır.</p>
-        <span class="git">Talep formu →</span>
-    </a>
-    <a class="kart arac g3" href="/servis/durum">
-        <span class="numara">03</span>
-        <h2>Talep durumu</h2>
-        <p>Talep numarası ve telefonunuzun son dört hanesiyle zaman çizelgesini, sıradaki adımı ve tahmini tarihi görün.</p>
-        <span class="git">Durumu sorgula →</span>
-    </a>
-    <a class="kart arac g4" href="/egitim">
-        <span class="numara">04</span>
-        <h2>Kullanım eğitimi ve sertifika</h2>
-        <p>Kısa videoları izleyin, her dersin sonunda birkaç soruyu yanıtlayın. Eğitimi bitiren her kullanıcıya karekodla doğrulanabilen bir sertifika verilir.</p>
-        <span class="git">Eğitimlere git →</span>
-    </a>
-    <div class="kart arac g2">
-        <span class="buyuk-rakam">%95</span>
-        <p>Bir dersin tamamlanmış sayılması için videonun izlenmesi gereken kısım. Süre sunucuda ölçülür.</p>
-    </div>
-</div>
+</section>
+
+@section AltNot {
+    <span class="kaynaklar">Fotoğraflar temsilîdir: Shixart1985 (CC BY 2.0), rawpixel (CC0), Wolfgang Stief (CC0), germanium (CC BY 2.0), Wikimedia Commons ve Openverse üzerinden. Cihaz çizimi bu uygulama için hazırlandı.</span>
+}

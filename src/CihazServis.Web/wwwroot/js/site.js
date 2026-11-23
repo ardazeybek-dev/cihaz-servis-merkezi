@@ -43,6 +43,44 @@
     });
   }
 
+  // Anasayfa: bölümler göründükçe içerik sırayla gelir, sabit sahnedeki kart o bölüme geçer.
+  var girenler = document.querySelectorAll("[data-gir]");
+  if (girenler.length && "IntersectionObserver" in window) {
+    document.documentElement.classList.add("js");
+    var giris = new IntersectionObserver(function (kayitlar) {
+      kayitlar.forEach(function (k) {
+        if (k.isIntersecting) {
+          k.target.classList.add("girdi");
+          giris.unobserve(k.target);
+        }
+      });
+    }, { rootMargin: "0px 0px -10% 0px" });
+    girenler.forEach(function (g) { giris.observe(g); });
+  }
+  var sahne = document.querySelector(".sahne");
+  var sahneBolumleri = document.querySelectorAll("[data-sahne]");
+  if (sahne && sahneBolumleri.length && "IntersectionObserver" in window) {
+    var izleyici = new IntersectionObserver(function (kayitlar) {
+      kayitlar.forEach(function (k) {
+        if (k.isIntersecting) {
+          sahne.setAttribute("data-durum", k.target.getAttribute("data-sahne"));
+        }
+      });
+    }, { rootMargin: "-45% 0px -45% 0px" });
+    sahneBolumleri.forEach(function (b) { izleyici.observe(b); });
+  }
+
+  // Örnek değer düğmeleri hedef alanı doldurur.
+  document.querySelectorAll("[data-doldur]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var hedef = document.getElementById(b.getAttribute("data-doldur"));
+      if (hedef) {
+        hedef.value = b.textContent.trim();
+        hedef.focus();
+      }
+    });
+  });
+
   // Demo hesabı düğmeleri giriş formunu doldurur.
   document.querySelectorAll("[data-demo-hesap]").forEach(function (b) {
     b.addEventListener("click", function () {
