@@ -8,7 +8,6 @@
     @if (Model.Sonuc is { } s)
     {
         <div class="ust-baslik">
-            <div class="etiket">Sonuç</div>
             <h1>@(s.Gecti ? "Tebrikler, geçtiniz" : "Bu sefer olmadı")</h1>
         </div>
         <section class="kart" data-quiz-sonuc="@(s.Gecti ? "gecti" : "kaldi")">
@@ -54,7 +53,6 @@
     else if (Model.Quiz is { } q)
     {
         <div class="ust-baslik">
-            <div class="etiket">Ders soruları</div>
             <h1>@q.DersBasligi</h1>
             <p>@q.Sorular.Count soru, geçme notu @q.GecmeNotu. Kalan deneme hakkınız @q.KalanHak.</p>
         </div>

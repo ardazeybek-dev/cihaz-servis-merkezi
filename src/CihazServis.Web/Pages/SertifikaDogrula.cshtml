@@ -6,14 +6,25 @@
 }
 <div class="dar-blok">
     <div class="ust-baslik">
-        <div class="etiket">Doğrulama</div>
         <h1>Sertifika doğrulama</h1>
         <p>Sertifikadaki karekodu okutun ya da sertifika numarasını yazın.</p>
+        <div class="ust-gorsel karekod-gorsel" aria-hidden="true">
+            <svg class="buyuk-karekod" viewBox="0 0 21 21" focusable="false">
+                <path d="M0 0h7v7H0zM1 1v5h5V1zM2 2h3v3H2zM14 0h7v7h-7zM15 1v5h5V1zM16 2h3v3h-3zM0 14h7v7H0zM1 15v5h5v-5zM2 16h3v3H2zM8 0h1v2H8zM10 1h2v1h-2zM9 3h2v2H9zM12 4h1v3h-1zM8 6h2v2H8zM0 8h2v1H0zM3 8h3v1H3zM2 10h2v2H2zM5 10h2v1H5zM8 9h3v1H8zM12 8h2v2h-2zM15 8h2v1h-2zM18 8h3v2h-3zM9 11h1v3H9zM11 11h3v1h-3zM14 12h2v2h-2zM17 11h1v3h-1zM19 12h2v1h-2zM8 15h2v2H8zM11 14h2v2h-2zM13 16h3v1h-3zM17 15h2v2h-2zM20 15h1v3h-1zM9 18h3v1H9zM13 18h1v3h-1zM15 19h3v2h-3zM19 19h2v1h-2zM8 20h3v1H8z" />
+            </svg>
+        </div>
     </div>
 
     @if (Model.Sonuc is { } s)
     {
-        <section class="kart" data-sertifika="@(s.Gecerli ? "gecerli" : "iptal")">
+        <section class="kart belge" data-sertifika="@(s.Gecerli ? "gecerli" : "iptal")">
+            <div class="belge-ust">
+                <div>
+                    <p class="soluk">Kullanım sertifikası</p>
+                    <h2>@s.KursAdi</h2>
+                </div>
+                <svg class="ikon" aria-hidden="true" focusable="false"><use href="#i-madalya" /></svg>
+            </div>
             <p>@if (s.Gecerli)
                {
                    <span class="rozet basari">Geçerli</span>

@@ -5,9 +5,18 @@
     ViewData["Title"] = "Eğitim";
 }
 <div class="ust-baslik">
-    <div class="etiket">Kullanım eğitimi</div>
     <h1>Eğitimleriniz</h1>
     <p>Dersler sırayla açılır. Her dersin videosunu izleyin, ardından beş soruyu yanıtlayın. Tüm dersleri bitirdiğinizde kullanım sertifikanız hazırlanır.</p>
+    <div class="ust-gorsel" aria-hidden="true">
+        <div class="mini-oynatici">
+            <div class="mini-ekran">
+                <span class="oynat-dugme"><svg class="ikon" focusable="false"><use href="#i-oynat" /></svg></span>
+                <span class="kilit-cip"><svg class="ikon" focusable="false"><use href="#i-kilit" /></svg>İleri sarma kapalı</span>
+            </div>
+            <div class="mini-cubuk koyu"><span class="d64"></span></div>
+            <div class="mini-oynatici-alt"><span>Süre sunucuda ölçülür</span><span>%95</span></div>
+        </div>
+    </div>
 </div>
 
 @foreach (var k in Model.Kurslar)
@@ -30,8 +39,24 @@
                     _ => ("kilitli", d.Sira.ToString(), "Önceki ders bitince açılır"),
                 };
                 <li class="@sinif" data-ders="@d.DersId" data-asama="@d.Asama">
-                    <span class="durum-isaret" aria-hidden="true">@isaret</span>
+                    <span class="ders-kapak" aria-hidden="true">
+                        <span class="ders-no">@d.Sira</span>
+                        <svg class="ikon" focusable="false"><use href="@(d.Asama == DersAsamasi.Kilitli ? "#i-kilit" : d.Asama == DersAsamasi.Tamamlandi ? "#i-tik" : "#i-oynat")" /></svg>
+                    </span>
                     <span class="ad"><strong>@d.Baslik</strong><br /><span class="ipucu">@durum</span></span>
+                    @{
+                        var yuzde = d.Asama is DersAsamasi.Tamamlandi or DersAsamasi.QuizAcik ? 1.0 : Math.Clamp(d.IzlenenOran, 0, 1);
+                    }
+                    <span class="ilerleme-halka" aria-hidden="true">
+                        <svg viewBox="0 0 44 44" focusable="false">
+                            <circle class="iz" cx="22" cy="22" r="18" />
+                            @if (yuzde > 0)
+                            {
+                                <circle class="dolu" cx="22" cy="22" r="18" stroke-dasharray="@((yuzde * 113.1).ToString("0.#", System.Globalization.CultureInfo.InvariantCulture)) 113.1" />
+                            }
+                        </svg>
+                        %@((int)(yuzde * 100))
+                    </span>
                     @switch (d.Asama)
                     {
                         case DersAsamasi.VideoAcik:

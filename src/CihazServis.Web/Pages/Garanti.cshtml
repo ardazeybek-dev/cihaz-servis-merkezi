@@ -7,9 +7,15 @@
 }
 <div class="dar-blok">
     <div class="ust-baslik">
-        <div class="etiket">Cihaz doğrulama</div>
         <h1>Garanti sorgula</h1>
         <p>Cihazın arka yüzündeki etikette yazan seri numarasını girin. Sonuçta yalnız model ve garanti bilgisi görünür, kayıtlı kurumun bilgileri gösterilmez.</p>
+        <div class="ust-gorsel" aria-hidden="true">
+            <div class="seri-etiketi">
+                <div class="seri-etiketi-ust"><span>Demo Cihaz A100</span><span>CE</span></div>
+                <div class="barkod"></div>
+                <div class="sayi">S/N DMO-A240-0001</div>
+            </div>
+        </div>
     </div>
 
     <form method="post" class="kart" novalidate>
@@ -53,6 +59,29 @@
                     GarantiDurumu.YakindaBitiyor => ("uyari", "Garanti yakında bitiyor"),
                     _ => ("basari", "Garanti devam ediyor"),
                 };
+                var oran = y.Garanti.Durum == GarantiDurumu.Bitti ? 0 : Math.Min(1.0, y.Garanti.KalanGun / 730.0);
+                var cevre = 2 * Math.PI * 64;
+                <div class="garanti-sonuc">
+                <div class="kalan-halka @sinif" aria-hidden="true">
+                    <svg viewBox="0 0 148 148" focusable="false">
+                        <circle class="iz" cx="74" cy="74" r="64" />
+                        @if (oran > 0)
+                        {
+                            <circle class="dolu" cx="74" cy="74" r="64" stroke-dasharray="@((oran * cevre).ToString("0.#", System.Globalization.CultureInfo.InvariantCulture)) @cevre.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture)" />
+                        }
+                    </svg>
+                    <div class="kalan-halka-metin">
+                        @if (y.Garanti.Durum == GarantiDurumu.Bitti)
+                        {
+                            <strong>0</strong><span>gün</span>
+                        }
+                        else
+                        {
+                            <strong>@y.Garanti.KalanGun</strong><span>gün kaldı</span>
+                        }
+                    </div>
+                </div>
+                <div>
                 <p><span class="rozet @sinif">@etiket</span> <span class="rozet vurgu">Hizmet: @y.HizmetSeviyesi</span></p>
                 <h2>@y.Model!.Ad</h2>
                 <dl class="ozellikler">
@@ -63,6 +92,8 @@
                         <dt>Kalan süre</dt><dd>@y.Garanti.KalanGun gün</dd>
                     }
                 </dl>
+                </div>
+                </div>
                 <p class="ara">@y.Mesaj</p>
                 <a class="dugme ikincil" href="@y.ServisTalebiAdresi">Bu cihaz için servis talebi aç</a>
             }

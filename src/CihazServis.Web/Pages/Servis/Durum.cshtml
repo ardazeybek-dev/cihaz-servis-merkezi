@@ -10,9 +10,16 @@
 }
 <div class="dar-blok">
     <div class="ust-baslik">
-        <div class="etiket">Servis</div>
         <h1>Talep durumu</h1>
         <p>Talep numaranızı ve talepte yazdığınız telefonun son 4 hanesini girin. Sonuçta kişisel bilgileriniz gösterilmez.</p>
+        <div class="ust-gorsel" aria-hidden="true">
+            <ol class="mini-cizelge">
+                <li class="tamam">Alındı</li>
+                <li class="tamam">İnceleniyor</li>
+                <li class="simdi">Serviste</li>
+                <li>Tamamlandı</li>
+            </ol>
+        </div>
     </div>
 
     <form method="post" class="kart" novalidate autocomplete="off">
@@ -50,6 +57,15 @@
             <section class="kart ara" data-sonuc="bulundu" data-durum="@y.Durum">
                 <p><span class="rozet @sinif">@y.DurumAdi</span> <span class="rozet">@y.Konu</span></p>
                 <h2><span class="mono">@y.No</span></h2>
+                @{ var gecilen = y.Cizelge.Select(c => c.Durum).ToHashSet(); }
+                <ol class="durum-seridi @(y.Durum == TalepDurumu.Iptal ? "iptal" : null)" aria-label="Aşamalar">
+                    @foreach (var asama in new[] { TalepDurumu.Alindi, TalepDurumu.Inceleniyor, TalepDurumu.ParcaBekleniyor, TalepDurumu.Serviste, TalepDurumu.Tamamlandi })
+                    {
+                        var ad = TalepDurumAkisi.Ad(asama);
+                        var sinifA = asama == y.Durum ? (asama == TalepDurumu.Tamamlandi ? "tamam" : "simdi") : gecilen.Contains(asama) ? "tamam" : null;
+                        <li class="@sinifA" aria-current="@(asama == y.Durum ? "step" : null)"><span>@ad</span></li>
+                    }
+                </ol>
                 <dl class="ozellikler">
                     @if (y.ModelAdi is not null)
                     {

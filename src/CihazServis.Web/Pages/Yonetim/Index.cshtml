@@ -8,7 +8,6 @@
     var yonetici = User.IsInRole("Yonetici");
 }
 <div class="ust-baslik">
-    <div class="etiket">Yönetim</div>
     <h1>Talep kuyruğu</h1>
     <p>Hedef tarihi en yakın talep en üstte. Hedefi geçmiş açık talepler işaretlenir.</p>
     <p class="yatay">
@@ -19,6 +18,35 @@
             <a class="dugme ikincil kucuk" href="/yonetim/hangfire">Arka plan işleri</a>
         }
     </p>
+</div>
+
+@{
+    var acik = Model.Tumu.Count(t => !TalepDurumAkisi.KapaliMi(t.Durum));
+    var geciken = Model.Tumu.Count(t => t.Gecikti);
+    var kayitsiz = Model.Tumu.Count(t => !t.Dogrulandi && !TalepDurumAkisi.KapaliMi(t.Durum));
+    var enCok = Math.Max(1, Enum.GetValues<TalepDurumu>().Max(d => Model.Tumu.Count(t => t.Durum == d)));
+}
+<div class="yonetim-ozet">
+    <div class="ozet-karolar">
+        <div class="ozet-karo vurgulu"><span class="buyuk-rakam">@acik</span><p>Açık talep</p></div>
+        <div class="ozet-karo @(geciken > 0 ? "dikkat" : null)"><span class="buyuk-rakam">@geciken</span><p>Hedefi geçen</p></div>
+        <div class="ozet-karo"><span class="buyuk-rakam">@kayitsiz</span><p>Kayıtsız seri no</p></div>
+        <div class="ozet-karo"><span class="buyuk-rakam">@Model.Tumu.Count</span><p>Toplam talep</p></div>
+    </div>
+    <section class="kart" aria-labelledby="dagilim-baslik">
+        <h2 id="dagilim-baslik" class="kucuk-baslik">Durumlara göre</h2>
+        <ul class="durum-grafik">
+            @foreach (var d in Enum.GetValues<TalepDurumu>())
+            {
+                var adet = Model.Tumu.Count(t => t.Durum == d);
+                <li class="@(TalepDurumAkisi.KapaliMi(d) ? "kapali" : null)">
+                    <span>@TalepDurumAkisi.Ad(d)</span>
+                    <span class="cubuk" aria-hidden="true"><svg viewBox="0 0 100 10" preserveAspectRatio="none" focusable="false"><rect width="@(adet * 100 / enCok)" height="10" /></svg></span>
+                    <span class="sayi">@adet</span>
+                </li>
+            }
+        </ul>
+    </section>
 </div>
 
 <form method="get" class="kart" role="search" aria-label="Talepleri süz">

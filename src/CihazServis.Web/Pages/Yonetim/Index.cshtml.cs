@@ -22,10 +22,14 @@ public class IndexModel(ServisTalebiServisi servis) : PageModel
 
     public List<TalepSatiri> Talepler { get; private set; } = [];
 
+    /// <summary>Süzgeçten bağımsız tüm talepler: üstteki özet ve durum grafiği için.</summary>
+    public List<TalepSatiri> Tumu { get; private set; } = [];
+
     public async Task OnGetAsync(CancellationToken ct)
     {
         Response.Headers.CacheControl = "no-store";
         Talepler = await servis.ListeleAsync(
             new TalepFiltresi(Durum, !Kapalilar, Benim ? User.KullaniciId() : null, Arama), ct);
+        Tumu = await servis.ListeleAsync(new TalepFiltresi(YalnizAcik: false), ct);
     }
 }
